@@ -23,6 +23,8 @@ export class EnemyFactory {
       enemy.setTexture(config.textureKey);
     }
 
+    enemy.setDepth(config.layer === 'bgEnemies' ? 150 : 350);
+    enemy.syncBodyFromConfig();
     enemy.spawn(x, y);
     return enemy;
   }

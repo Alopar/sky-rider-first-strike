@@ -9,6 +9,8 @@ export class SvgTextureFactory {
     scene.load.svg('player_bullet', 'assets/svg/bullets/player_bullet.svg', { width: R(8), height: R(16) });
     scene.load.svg('enemy_bullet', 'assets/svg/bullets/enemy_bullet.svg', { width: R(10), height: R(10) });
     scene.load.svg('enemy_drifter', 'assets/svg/enemies/drifter.svg', { width: R(26), height: R(26) });
+    scene.load.svg('enemy_hauler', 'assets/svg/enemies/hauler.svg', { width: R(56), height: R(32) });
     scene.load.svg('enemy_striker', 'assets/svg/enemies/striker.svg', { width: R(32), height: R(32) });
+    scene.load.svg('enemy_rammer', 'assets/svg/enemies/rammer.svg', { width: R(30), height: R(30) });
   }
 }

@@ -24,6 +24,7 @@ export class GameScene extends Phaser.Scene {
     
     const marginBottom = Math.round(140 * gameConfig.worldScale);
     this.player = new Player(this, gameConfig.width / 2, gameConfig.height - marginBottom);
+    this.registry.set('playerRef', this.player);
     this.weaponSystem = new WeaponSystem(this, this.layerManager);
     this.weaponSystem.setLevel(1);
     
@@ -42,6 +43,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   onSceneShutdown() {
+    this.registry.remove('playerRef');
     if (this._restartTimer) {
       this._restartTimer.remove(false);
       this._restartTimer = undefined;
