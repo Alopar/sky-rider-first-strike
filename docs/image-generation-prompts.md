@@ -4,6 +4,8 @@
 
 Изображения **не заменяют** целевой пайплайн игры (в рантайме — SVG и процедурные эффекты), но помогают зафиксировать настроение, композицию и цветовую семантику до финальных ассетов.
 
+В каталоге **`docs/image-gen/`** лежат PNG-референсы, сгенерированные по этой серии (имя файла совпадает с **тегом** в скобках у соответствующего пункта ниже): `key-art-mood.png`, `player-ship.png`, `enemy-drifter.png`, `enemy-hauler.png`, `enemy-striker.png`, `enemy-weaver.png`, `two-layers-combat.png`, `powerups.png`, `boss-phase-1.png`, `boss-phase-2.png`, `mock-gameplay-screen.png`, `ui-main-menu.png`, `ui-hud.png`, `ui-results.png`. Это вспомогательные материалы для согласования стиля, а не игровые ассеты.
+
 ---
 
 ## Общие указания ко всем промптам
