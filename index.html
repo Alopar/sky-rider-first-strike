@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sky Rider — First Strike</title>
-    <!-- Phaser 4: фиксированная версия на jsDelivr -->
+    <!-- Phaser 3: фиксированная версия на jsDelivr -->
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"
@@ -17,15 +17,37 @@
         height: 100%;
         background: #0f0f12;
       }
-      #game {
+      #game-root {
+        width: 100%;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 100%;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      #game-viewport-scaler {
+        flex-shrink: 0;
+        overflow: hidden;
+      }
+      #game-viewport {
+        position: relative;
+        flex-shrink: 0;
+      }
+      #game {
+        position: absolute;
+        left: 0;
+        top: 0;
       }
     </style>
   </head>
   <body>
-    <div id="game"></div>
+    <div id="game-root">
+      <div id="game-viewport-scaler">
+        <div id="game-viewport">
+          <div id="game"></div>
+        </div>
+      </div>
+    </div>
   </body>
 </html>

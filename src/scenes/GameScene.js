@@ -7,6 +7,7 @@ import { EnemyFactory } from '../systems/EnemyFactory.js';
 import { SpawnDirector } from '../systems/SpawnDirector.js';
 import { CollisionMatrix } from '../systems/CollisionMatrix.js';
 import { ScoreSystem } from '../systems/ScoreSystem.js';
+import { gameConfig } from '../config/game-config.js';
 import { level01 } from '../config/levels/level-01.js';
 import { EventBus } from '../systems/EventBus.js';
 import { EVT } from '../systems/events.js';
@@ -21,7 +22,8 @@ export class GameScene extends Phaser.Scene {
     this.starfield = new ParallaxStarfield(this);
     this.inputManager = new InputManager(this);
     
-    this.player = new Player(this, 400, 500);
+    const marginBottom = Math.round(140 * gameConfig.worldScale);
+    this.player = new Player(this, gameConfig.width / 2, gameConfig.height - marginBottom);
     this.weaponSystem = new WeaponSystem(this, this.layerManager);
     this.weaponSystem.setLevel(1);
     

@@ -1,3 +1,4 @@
+import { gameConfig } from '../config/game-config.js';
 import { weapons } from '../config/weapons.js';
 import { PlayerBullet, EnemyBullet } from '../entities/Bullets.js';
 import { EventBus } from './EventBus.js';
@@ -29,6 +30,7 @@ export class WeaponSystem {
       
       const group = this.lm.getGroup('playerBullets');
       
+      const dy = Math.round(10 * gameConfig.worldScale);
       config.angles.forEach(angle => {
         const rad = Phaser.Math.DegToRad(angle - 90);
         const vx = Math.cos(rad) * config.speed;
@@ -36,22 +38,22 @@ export class WeaponSystem {
         
         let bullet = group.getFirstDead(false);
         if (!bullet) {
-          bullet = new PlayerBullet(this.scene, player.x, player.y - 10);
+          bullet = new PlayerBullet(this.scene, player.x, player.y - dy);
           group.add(bullet);
         }
-        bullet.fire(player.x, player.y - 10, vx, vy);
+        bullet.fire(player.x, player.y - dy, vx, vy);
       });
     }
   }
 
   spawnEnemyBullet(x, y, speed) {
+    const dy = Math.round(10 * gameConfig.worldScale);
     const group = this.lm.getGroup('enemyBullets');
     let bullet = group.getFirstDead(false);
     if (!bullet) {
-      bullet = new EnemyBullet(this.scene, x, y + 10);
+      bullet = new EnemyBullet(this.scene, x, y + dy);
       group.add(bullet);
     }
-    // simple straight down
-    bullet.fire(x, y + 10, 0, speed);
+    bullet.fire(x, y + dy, 0, speed);
   }
 }

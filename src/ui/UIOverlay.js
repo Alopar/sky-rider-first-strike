@@ -1,5 +1,6 @@
 import { EventBus } from '../systems/EventBus.js';
 import { EVT } from '../systems/events.js';
+import { gameConfig } from '../config/game-config.js';
 
 export class UIOverlay {
   constructor(containerId) {
@@ -9,17 +10,21 @@ export class UIOverlay {
       this.container.id = containerId;
       document.body.appendChild(this.container);
     }
-    
+
+    const w = gameConfig.width;
+    const h = gameConfig.height;
+
     this.container.style.position = 'absolute';
     this.container.style.top = '0';
     this.container.style.left = '0';
-    this.container.style.width = '100%';
-    this.container.style.height = '100%';
+    this.container.style.width = `${w}px`;
+    this.container.style.height = `${h}px`;
     this.container.style.pointerEvents = 'none';
     this.container.style.display = 'flex';
     this.container.style.flexDirection = 'column';
     this.container.style.color = '#fff';
     this.container.style.fontFamily = 'sans-serif';
+    this.container.style.boxSizing = 'border-box';
 
     this.buildHUD();
     this.setupListeners();
@@ -35,7 +40,7 @@ export class UIOverlay {
     this.hudElement.style.right = '10px';
     this.hudElement.style.display = 'flex';
     this.hudElement.style.justifyContent = 'space-between';
-    this.hudElement.style.fontSize = '24px';
+    this.hudElement.style.fontSize = '32px';
     this.hudElement.style.fontWeight = 'bold';
     
     this.scoreElement = document.createElement('div');
@@ -53,7 +58,7 @@ export class UIOverlay {
     this.gameOverElement.style.top = '50%';
     this.gameOverElement.style.left = '50%';
     this.gameOverElement.style.transform = 'translate(-50%, -50%)';
-    this.gameOverElement.style.fontSize = '48px';
+    this.gameOverElement.style.fontSize = '72px';
     this.gameOverElement.style.fontWeight = 'bold';
     this.gameOverElement.style.color = '#D63A3A';
     this.gameOverElement.style.display = 'none';

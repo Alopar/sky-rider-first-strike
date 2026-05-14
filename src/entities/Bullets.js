@@ -14,7 +14,8 @@ export class PlayerBullet extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
-    if (this.y < -50 || this.x < -50 || this.x > this.scene.game.config.width + 50) {
+    const m = 75;
+    if (this.y < -m || this.x < -m || this.x > this.scene.game.config.width + m) {
       this.destroy();
     }
   }
@@ -37,7 +38,8 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite {
 
   update() {
     const gameHeight = this.scene.game.config.height;
-    if (this.y > gameHeight + 50 || this.x < -50 || this.x > this.scene.game.config.width + 50) {
+    const m = 75;
+    if (this.y > gameHeight + m || this.x < -m || this.x > this.scene.game.config.width + m) {
       this.destroy();
     }
   }

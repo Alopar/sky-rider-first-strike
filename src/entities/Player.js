@@ -9,7 +9,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     
     this.setDepth(400);
-    this.body.setCircle(gameConfig.player.hitboxRadius, 16 - gameConfig.player.hitboxRadius, 16 - gameConfig.player.hitboxRadius);
+    const half = gameConfig.player.textureHalf;
+    const hb = gameConfig.player.hitboxRadius;
+    this.body.setCircle(hb, half - hb, half - hb);
     this.setCollideWorldBounds(true);
 
     this.hp = 3;

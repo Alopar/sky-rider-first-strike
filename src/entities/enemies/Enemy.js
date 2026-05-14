@@ -1,5 +1,8 @@
+import { gameConfig } from '../../config/game-config.js';
 import { EventBus } from '../../systems/EventBus.js';
 import { EVT } from '../../systems/events.js';
+
+const S = gameConfig.worldScale;
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
   constructor(scene, config, layerGroup) {
@@ -45,10 +48,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, this.x, this.y);
     // Simple explosion effect
     for (let i = 0; i < 8; i++) {
-      const line = this.scene.add.line(this.x, this.y, 0, 0, 10, 0, 0xffffff).setLineWidth(2);
+      const line = this.scene.add.line(this.x, this.y, 0, 0, 10 * S, 0, 0xffffff).setLineWidth(2 * S);
       this.scene.physics.add.existing(line);
       const angle = (Math.PI * 2 / 8) * i;
-      line.body.setVelocity(Math.cos(angle) * 100, Math.sin(angle) * 100);
+      line.body.setVelocity(Math.cos(angle) * 100 * S, Math.sin(angle) * 100 * S);
       this.scene.tweens.add({
         targets: line,
         alpha: 0,
@@ -75,7 +78,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       }
     }
 
-    if (this.y > this.scene.game.config.height + 50) {
+    if (this.y > this.scene.game.config.height + 75) {
       this.destroy();
     }
   }
