@@ -35,6 +35,18 @@ export class GameScene extends Phaser.Scene {
 
     EventBus.emit(EVT.GAME_START);
     EventBus.on(EVT.PLAYER_DEAD, this.onPlayerDead, this);
+
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.onSceneShutdown, this);
+  }
+
+  onSceneShutdown() {
+    if (this._restartTimer) {
+      this._restartTimer.remove(false);
+      this._restartTimer = undefined;
+    }
+    EventBus.off(EVT.PLAYER_DEAD, this.onPlayerDead, this);
+    this.weaponSystem?.destroy();
+    this.scoreSystem?.destroy();
   }
 
   update(time, delta) {
@@ -64,7 +76,11 @@ export class GameScene extends Phaser.Scene {
 
   onPlayerDead() {
     EventBus.emit(EVT.GAME_OVER);
-    this.time.delayedCall(2000, () => {
+    if (this._restartTimer) {
+      this._restartTimer.remove(false);
+    }
+    this._restartTimer = this.time.delayedCall(2000, () => {
+      this._restartTimer = undefined;
       this.scoreSystem.reset();
       this.scene.restart();
     });

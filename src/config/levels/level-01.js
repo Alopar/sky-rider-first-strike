@@ -1,5 +1,7 @@
 export const level01 = {
   duration: 60000,
+  /** После последней волны снова отсчитывать тайминг волн с нуля */
+  loop: true,
   waves: [
     { time: 1000, type: 'drifter', count: 3, interval: 500, x: 200 },
     { time: 3000, type: 'drifter', count: 3, interval: 500, x: 600 },

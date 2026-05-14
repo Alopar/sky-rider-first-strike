@@ -10,7 +10,12 @@ export class WeaponSystem {
     this.level = 1;
     this.lastFired = 0;
 
-    EventBus.on(EVT.ENEMY_FIRE, (x, y, speed) => this.spawnEnemyBullet(x, y, speed), this);
+    this._onEnemyFire = (x, y, speed) => this.spawnEnemyBullet(x, y, speed);
+    EventBus.on(EVT.ENEMY_FIRE, this._onEnemyFire, this);
+  }
+
+  destroy() {
+    EventBus.off(EVT.ENEMY_FIRE, this._onEnemyFire, this);
   }
 
   setLevel(level) {

@@ -7,8 +7,21 @@ export class ScoreSystem {
     this.multiplier = 1;
     this.combo = 0;
 
-    EventBus.on(EVT.ENEMY_KILLED, (points) => this.addScore(points));
-    EventBus.on(EVT.PLAYER_HIT, () => this.resetMultiplier());
+    EventBus.on(EVT.ENEMY_KILLED, this.onEnemyKilled, this);
+    EventBus.on(EVT.PLAYER_HIT, this.onPlayerHit, this);
+  }
+
+  onEnemyKilled(points) {
+    this.addScore(points);
+  }
+
+  onPlayerHit() {
+    this.resetMultiplier();
+  }
+
+  destroy() {
+    EventBus.off(EVT.ENEMY_KILLED, this.onEnemyKilled, this);
+    EventBus.off(EVT.PLAYER_HIT, this.onPlayerHit, this);
   }
 
   addScore(points) {
