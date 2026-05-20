@@ -1,3 +1,6 @@
+import { EventBus } from './EventBus.js';
+import { EVT } from './events.js';
+
 export class SpawnDirector {
   constructor(scene, enemyFactory, levelConfig) {
     this.scene = scene;
@@ -5,11 +8,23 @@ export class SpawnDirector {
     this.config = levelConfig;
     this.waveIndex = 0;
     this.startTime = -1;
+    this.levelComplete = false;
   }
 
   start(time) {
     this.startTime = time;
     this.waveIndex = 0;
+    this.levelComplete = false;
+  }
+
+  getElapsed(time) {
+    if (this.startTime === -1) return 0;
+    return time - this.startTime;
+  }
+
+  getRemainingMs(time) {
+    const duration = this.config.duration ?? 0;
+    return Math.max(0, duration - this.getElapsed(time));
   }
 
   /**
@@ -41,7 +56,16 @@ export class SpawnDirector {
   update(time) {
     if (this.startTime === -1) return;
 
-    const elapsed = time - this.startTime;
+    const elapsed = this.getElapsed(time);
+    const duration = this.config.duration;
+
+    if (duration != null && elapsed >= duration) {
+      if (!this.levelComplete) {
+        this.levelComplete = true;
+        EventBus.emit(EVT.LEVEL_COMPLETE);
+      }
+      return;
+    }
 
     while (this.waveIndex < this.config.waves.length) {
       const wave = this.config.waves[this.waveIndex];
@@ -69,7 +93,7 @@ export class SpawnDirector {
     for (let i = 0; i < count; i++) {
       const idx = i;
       this.scene.time.delayedCall(idx * interval, () => {
-        if (!this.scene.sys.isActive()) return;
+        if (!this.scene.sys.isActive() || this.levelComplete) return;
         const x = this.resolveSpawnX(wave, idx, count);
         this.factory.spawn(wave.type, x, -50);
       });

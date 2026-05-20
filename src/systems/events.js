@@ -8,5 +8,7 @@ export const EVT = {
   WEAPON_LEVEL_CHANGED: 'weapon:level-changed',
   HP_CHANGED: 'player:hp-changed',
   GAME_OVER: 'game:over',
-  GAME_START: 'game:start'
+  GAME_START: 'game:start',
+  LEVEL_COMPLETE: 'level:complete',
+  LEVEL_TIME_CHANGED: 'level:time-changed'
 };

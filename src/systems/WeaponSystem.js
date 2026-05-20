@@ -11,7 +11,7 @@ export class WeaponSystem {
     this.level = 1;
     this.lastFired = 0;
 
-    this._onEnemyFire = (x, y, speed) => this.spawnEnemyBullet(x, y, speed);
+    this._onEnemyFire = (x, y, vx, vy, style) => this.spawnEnemyBullet(x, y, vx, vy, style);
     EventBus.on(EVT.ENEMY_FIRE, this._onEnemyFire, this);
   }
 
@@ -46,14 +46,13 @@ export class WeaponSystem {
     }
   }
 
-  spawnEnemyBullet(x, y, speed) {
-    const dy = Math.round(10 * gameConfig.worldScale);
+  spawnEnemyBullet(x, y, vx, vy, style = 'laser') {
     const group = this.lm.getGroup('enemyBullets');
     let bullet = group.getFirstDead(false);
     if (!bullet) {
-      bullet = new EnemyBullet(this.scene, x, y + dy);
+      bullet = new EnemyBullet(this.scene, x, y);
       group.add(bullet);
     }
-    bullet.fire(x, y + dy, 0, speed);
+    bullet.fire(x, y, vx, vy, style);
   }
 }

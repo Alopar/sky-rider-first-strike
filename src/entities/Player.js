@@ -17,6 +17,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.hp = 3;
     this.maxHp = 3;
     this.isInvulnerable = false;
+
+    EventBus.emit(EVT.HP_CHANGED, this.hp);
   }
 
   update(input, dt) {

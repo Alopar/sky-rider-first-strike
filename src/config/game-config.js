@@ -1,5 +1,5 @@
 /** Внутреннее разрешение рендера: Full HD, 16:9 */
-const WORLD_SCALE = 1.5;
+const WORLD_SCALE = 2.25;
 
 export const gameConfig = {
   width: 1920,

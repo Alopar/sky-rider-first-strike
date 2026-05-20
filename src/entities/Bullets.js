@@ -29,11 +29,25 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(350);
   }
 
-  fire(x, y, vx, vy) {
+  fire(x, y, vx, vy, style = 'laser') {
+    const textureKey = style === 'round' ? 'enemy_bullet_round' : 'enemy_bullet';
+    if (this.texture.key !== textureKey) {
+      this.setTexture(textureKey);
+    }
+
     this.setPosition(x, y);
     this.setActive(true);
     this.setVisible(true);
     this.setVelocity(vx, vy);
+    this.alpha = 1;
+
+    if (style === 'round') {
+      this.setRotation(0);
+    } else if (vx !== 0 || vy !== 0) {
+      this.setRotation(Math.atan2(vy, vx) + Math.PI / 2);
+    } else {
+      this.setRotation(0);
+    }
   }
 
   update() {

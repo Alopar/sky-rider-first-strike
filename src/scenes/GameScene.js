@@ -35,9 +35,12 @@ export class GameScene extends Phaser.Scene {
     this.scoreSystem = new ScoreSystem();
     
     this.spawnDirector.start(this.time.now);
+    this._levelCleared = false;
+    this._lastTimerSecond = -1;
 
     EventBus.emit(EVT.GAME_START);
     EventBus.on(EVT.PLAYER_DEAD, this.onPlayerDead, this);
+    EventBus.on(EVT.LEVEL_COMPLETE, this.onLevelComplete, this);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.onSceneShutdown, this);
   }
@@ -49,6 +52,7 @@ export class GameScene extends Phaser.Scene {
       this._restartTimer = undefined;
     }
     EventBus.off(EVT.PLAYER_DEAD, this.onPlayerDead, this);
+    EventBus.off(EVT.LEVEL_COMPLETE, this.onLevelComplete, this);
     this.weaponSystem?.destroy();
     this.scoreSystem?.destroy();
   }
@@ -68,6 +72,7 @@ export class GameScene extends Phaser.Scene {
     }
 
     this.spawnDirector.update(time);
+    this.updateLevelTimer(time);
 
     // Update bullets
     this.layerManager.getGroup('playerBullets').getChildren().forEach(b => b.update());
@@ -78,7 +83,25 @@ export class GameScene extends Phaser.Scene {
     this.layerManager.getGroup('fgEnemies').getChildren().forEach(e => e.update(time, delta));
   }
 
+  updateLevelTimer(time) {
+    if (this._levelCleared || this.spawnDirector.startTime === -1) return;
+
+    const elapsedMs = this.spawnDirector.getElapsed(time);
+    const sec = Math.floor(elapsedMs / 1000);
+    if (sec !== this._lastTimerSecond) {
+      this._lastTimerSecond = sec;
+      EventBus.emit(EVT.LEVEL_TIME_CHANGED, elapsedMs);
+    }
+  }
+
+  onLevelComplete() {
+    if (this._levelCleared) return;
+    this._levelCleared = true;
+    EventBus.emit(EVT.LEVEL_TIME_CHANGED, level01.duration);
+  }
+
   onPlayerDead() {
+    if (this._levelCleared) return;
     EventBus.emit(EVT.GAME_OVER);
     if (this._restartTimer) {
       this._restartTimer.remove(false);
