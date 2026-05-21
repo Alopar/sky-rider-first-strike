@@ -10,7 +10,11 @@ export const palette = {
     bgAccent: '#FFB07A',
     fgBase: '#D63A3A',
     fgVariant: '#FF6B6B',
-    bullet: '#FF9C5C'
+    bullet: '#FF9C5C',
+    debrisBody: '#7A8494',
+    debrisLight: '#9CA8B8',
+    debrisDark: '#4A5260',
+    debrisCrater: '#2E3540'
   },
   boss: {
     body: '#8B1E3F',

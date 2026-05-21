@@ -1,3 +1,5 @@
+import { gameConfig } from '../config/game-config.js';
+import { enemiesConfig } from '../config/enemies.js';
 import { EventBus } from './EventBus.js';
 import { EVT } from './events.js';
 
@@ -27,12 +29,25 @@ export class SpawnDirector {
     return Math.max(0, duration - this.getElapsed(time));
   }
 
+  _getSpawnRatioBounds(typeId) {
+    const enemy = enemiesConfig[typeId];
+    if (!enemy || enemy.spawnZone !== 'main') return null;
+    const margin = gameConfig.spawnZones.main.sideMarginRatio;
+    return { min: margin, max: 1 - margin };
+  }
+
+  _clampSpawnRatio(r, bounds) {
+    if (!bounds) return Phaser.Math.Clamp(r, 0.02, 0.98);
+    return Phaser.Math.Clamp(r, bounds.min, bounds.max);
+  }
+
   /**
    * X в пикселях: legacy `x`, либо `xRatio` (одна точка), либо линейный разброс между xRatioFrom и xRatioTo.
    */
   resolveSpawnX(wave, index, count) {
     const w = this.scene.game.config.width;
-    const clampR = (r) => Phaser.Math.Clamp(r, 0.02, 0.98);
+    const bounds = this._getSpawnRatioBounds(wave.type);
+    const clampR = (r) => this._clampSpawnRatio(r, bounds);
 
     if (typeof wave.x === 'number' && wave.xRatio == null && wave.xRatioFrom == null && wave.xRatioTo == null) {
       return wave.x;

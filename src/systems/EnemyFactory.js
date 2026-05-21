@@ -1,4 +1,4 @@
-import { enemiesConfig } from '../config/enemies.js';
+import { enemiesConfig, resolveEnemyType } from '../config/enemies.js';
 import { Enemy } from '../entities/enemies/Enemy.js';
 
 export class EnemyFactory {
@@ -7,14 +7,13 @@ export class EnemyFactory {
     this.lm = layerManager;
   }
 
-  spawn(typeId, x, y) {
-    const config = enemiesConfig[typeId];
+  spawn(typeId, x, y, options = {}) {
+    const resolvedId = resolveEnemyType(typeId);
+    const config = enemiesConfig[resolvedId];
     if (!config) return null;
 
-    const groupName = config.layer; // 'bgEnemies' or 'fgEnemies'
-    const group = this.lm.getGroup(groupName);
+    const group = this.lm.getGroup(config.layer);
 
-    // Simplistic pool
     let enemy = group.getFirstDead(false);
     if (!enemy) {
       enemy = new Enemy(this.scene, config, group);
@@ -23,9 +22,9 @@ export class EnemyFactory {
       enemy.setTexture(config.textureKey);
     }
 
-    enemy.setDepth(config.layer === 'bgEnemies' ? 150 : 350);
+    enemy.setDepth(Enemy.depthForLayer(config.layer));
     enemy.syncBodyFromConfig();
-    enemy.spawn(x, y);
+    enemy.spawn(x, y, options);
     return enemy;
   }
 }

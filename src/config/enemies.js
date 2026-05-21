@@ -1,10 +1,34 @@
 import { gameConfig } from './game-config.js';
 
 const S = gameConfig.worldScale;
+const D = gameConfig.debris;
+
+/** Псевдотипы волн: случайный вариант из списка */
+export const DEBRIS_WAVE_TYPES = {
+  debrisLarge: ['debrisLargeRock', 'debrisLargeChunk', 'debrisLargeShard'],
+  debrisSmall: ['debrisSmallRock', 'debrisSmallChunk', 'debrisSmallShard']
+};
+
+export function resolveEnemyType(typeId) {
+  const variants = DEBRIS_WAVE_TYPES[typeId];
+  if (variants) {
+    return variants[Phaser.Math.Between(0, variants.length - 1)];
+  }
+  return typeId;
+}
+
+const debrisBase = {
+  layer: 'debrisEnemies',
+  behavior: 'debrisDrift',
+  speedVariance: D.speedVariance,
+  splitAngleRad: D.splitAngleRad,
+  splitSpeedFactor: D.splitSpeedFactor
+};
 
 export const enemiesConfig = {
   orb: {
     id: 'orb',
+    spawnZone: 'main',
     textureKey: 'enemy_orb',
     hp: 1,
     score: 10,
@@ -16,6 +40,7 @@ export const enemiesConfig = {
   },
   wobbler: {
     id: 'wobbler',
+    spawnZone: 'main',
     textureKey: 'enemy_wobbler',
     hp: 1,
     score: 15,
@@ -29,6 +54,7 @@ export const enemiesConfig = {
   },
   bastion: {
     id: 'bastion',
+    spawnZone: 'main',
     textureKey: 'enemy_bastion',
     hp: 5,
     score: 80,
@@ -71,6 +97,7 @@ export const enemiesConfig = {
   },
   striker: {
     id: 'striker',
+    spawnZone: 'main',
     textureKey: 'enemy_striker',
     hp: 2,
     score: 30,
@@ -95,5 +122,74 @@ export const enemiesConfig = {
     rotateInFlight: true,
     hitboxRadius: 11 * S,
     colors: { body: '#4a2550', stroke: '#c080e8' }
+  },
+  debrisLargeRock: {
+    ...debrisBase,
+    id: 'debrisLargeRock',
+    stage: 'large',
+    textureKey: 'enemy_debris_large_rock',
+    splitsInto: 'debrisSmallRock',
+    hp: 1,
+    score: 25,
+    speed: 78 * S,
+    hitboxRadius: 14 * S,
+    colors: { body: '#7A8494', stroke: '#5C6675', crater: '#2E3540' }
+  },
+  debrisLargeChunk: {
+    ...debrisBase,
+    id: 'debrisLargeChunk',
+    stage: 'large',
+    textureKey: 'enemy_debris_large_chunk',
+    splitsInto: 'debrisSmallChunk',
+    hp: 1,
+    score: 25,
+    speed: 72 * S,
+    hitboxRadius: 13 * S,
+    colors: { body: '#6E7888', stroke: '#5C6675', crater: '#2E3540' }
+  },
+  debrisLargeShard: {
+    ...debrisBase,
+    id: 'debrisLargeShard',
+    stage: 'large',
+    textureKey: 'enemy_debris_large_shard',
+    splitsInto: 'debrisSmallShard',
+    hp: 1,
+    score: 25,
+    speed: 85 * S,
+    hitboxRadius: 12 * S,
+    colors: { body: '#848F9E', stroke: '#5C6675', crater: '#2E3540' }
+  },
+  debrisSmallRock: {
+    ...debrisBase,
+    id: 'debrisSmallRock',
+    stage: 'small',
+    textureKey: 'enemy_debris_small_rock',
+    hp: 1,
+    score: 8,
+    speed: 95 * S,
+    hitboxRadius: 7 * S,
+    colors: { body: '#7A8494', stroke: '#5C6675', crater: '#2E3540' }
+  },
+  debrisSmallChunk: {
+    ...debrisBase,
+    id: 'debrisSmallChunk',
+    stage: 'small',
+    textureKey: 'enemy_debris_small_chunk',
+    hp: 1,
+    score: 8,
+    speed: 90 * S,
+    hitboxRadius: 6 * S,
+    colors: { body: '#6E7888', stroke: '#5C6675', crater: '#2E3540' }
+  },
+  debrisSmallShard: {
+    ...debrisBase,
+    id: 'debrisSmallShard',
+    stage: 'small',
+    textureKey: 'enemy_debris_small_shard',
+    hp: 1,
+    score: 8,
+    speed: 100 * S,
+    hitboxRadius: 6 * S,
+    colors: { body: '#848F9E', stroke: '#5C6675', crater: '#2E3540' }
   }
 };

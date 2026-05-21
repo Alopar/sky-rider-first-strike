@@ -1,10 +1,17 @@
 import { gameConfig } from '../../config/game-config.js';
+import { DebrisDestroyVfx } from '../../systems/DebrisDestroyVfx.js';
 import { EventBus } from '../../systems/EventBus.js';
 import { EVT } from '../../systems/events.js';
 
 const S = gameConfig.worldScale;
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
+  static depthForLayer(layer) {
+    if (layer === 'bgEnemies') return 150;
+    if (layer === 'debrisEnemies') return 180;
+    return 350;
+  }
+
   constructor(scene, config, layerGroup) {
     super(scene, 0, -50, config.textureKey);
     scene.add.existing(this);
@@ -16,7 +23,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.lastFired = 0;
     this.zigPhase = 0;
 
-    this.setDepth(config.layer === 'bgEnemies' ? 150 : 350);
+    this.setDepth(Enemy.depthForLayer(config.layer));
     this.syncBodyFromConfig();
   }
 
@@ -38,21 +45,49 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  spawn(x, y) {
+  spawn(x, y, options = {}) {
     this.setPosition(x, y);
     this.setActive(true);
     this.setVisible(true);
     this.hp = this.enemyConfig.hp;
     this.lastFired = 0;
     this.zigPhase = Phaser.Math.FloatBetween(0, Math.PI * 2);
+    if (this.body) this.setAngularVelocity(0);
+    this._debrisSpin = 0;
     this._applySpawnRotation();
-    if (this.enemyConfig.behavior === 'glidePast') {
+
+    const { behavior } = this.enemyConfig;
+    if (options.velocity) {
+      this.setVelocity(options.velocity.vx, options.velocity.vy);
+    } else if (behavior === 'debrisDrift') {
+      this._applyDebrisVelocity();
+    } else if (behavior === 'glidePast') {
       this._setGlidePastVelocity(x, y);
+    }
+
+    if (behavior === 'debrisDrift') {
+      this._applyDebrisSpin();
     }
   }
 
+  _applyDebrisSpin() {
+    const stage = this.enemyConfig.stage === 'large' ? 'large' : 'small';
+    const range = gameConfig.debris.spinRadPerSec[stage];
+    const sign = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
+    this._debrisSpin = Phaser.Math.FloatBetween(range.min, range.max) * sign;
+  }
+
+  _applyDebrisVelocity() {
+    const base = this.enemyConfig.speed;
+    const variance = this.enemyConfig.speedVariance ?? gameConfig.debris.speedVariance;
+    const mult = 1 + Phaser.Math.FloatBetween(-variance, variance);
+    this.setVelocity(0, base * mult);
+  }
+
   _applySpawnRotation() {
-    if (this.enemyConfig.rotateInFlight || this.enemyConfig.facingDown) {
+    if (this.enemyConfig.behavior === 'debrisDrift') {
+      this.setRotation(Phaser.Math.FloatBetween(0, Math.PI * 2));
+    } else if (this.enemyConfig.rotateInFlight || this.enemyConfig.facingDown) {
       this.setRotation(Math.PI);
     } else {
       this.setRotation(0);
@@ -107,7 +142,18 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   die() {
+    if (this.enemyConfig.splitsInto) {
+      this._dieAndSplit();
+      return;
+    }
+
     EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, this.x, this.y);
+    if (this.enemyConfig.layer === 'debrisEnemies') {
+      DebrisDestroyVfx.play(this.scene, this.x, this.y, { stage: this.enemyConfig.stage ?? 'small' });
+      this.destroy();
+      return;
+    }
+
     for (let i = 0; i < 8; i++) {
       const line = this.scene.add.line(this.x, this.y, 0, 0, 10 * S, 0, 0xffffff).setLineWidth(2 * S);
       this.scene.physics.add.existing(line);
@@ -118,6 +164,28 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         alpha: 0,
         duration: 250,
         onComplete: () => line.destroy()
+      });
+    }
+    this.destroy();
+  }
+
+  _dieAndSplit() {
+    EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, this.x, this.y);
+    DebrisDestroyVfx.play(this.scene, this.x, this.y, { stage: 'large' });
+
+    const vx = this.body?.velocity?.x ?? 0;
+    const vy = this.body?.velocity?.y ?? 0;
+    const speed = Math.hypot(vx, vy) || this.enemyConfig.speed;
+    const moveAngle = Math.hypot(vx, vy) > 1 ? Math.atan2(vy, vx) : Math.PI / 2;
+    const splitAngle = this.enemyConfig.splitAngleRad ?? gameConfig.debris.splitAngleRad;
+    const factor = this.enemyConfig.splitSpeedFactor ?? gameConfig.debris.splitSpeedFactor;
+    const fragmentSpeed = speed * factor;
+    const factory = this.scene.registry.get('enemyFactory');
+
+    for (const sign of [-1, 1]) {
+      const a = moveAngle + sign * splitAngle;
+      factory?.spawn(this.enemyConfig.splitsInto, this.x, this.y, {
+        velocity: { vx: Math.cos(a) * fragmentSpeed, vy: Math.sin(a) * fragmentSpeed }
       });
     }
     this.destroy();
@@ -140,6 +208,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     } else if (behavior === 'straightDown' || behavior === 'striker') {
       this.setVelocityY(speed);
       this.setVelocityX(0);
+    }
+    // debrisDrift: скорость задаётся при спавне, не перезаписываем
+    if (behavior === 'debrisDrift' && this._debrisSpin) {
+      this.rotation += this._debrisSpin * (dtMs / 1000);
     }
 
     this._updateFlightRotation();

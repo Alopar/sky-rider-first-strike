@@ -29,6 +29,7 @@ export class GameScene extends Phaser.Scene {
     this.weaponSystem.setLevel(1);
     
     this.enemyFactory = new EnemyFactory(this, this.layerManager);
+    this.registry.set('enemyFactory', this.enemyFactory);
     this.spawnDirector = new SpawnDirector(this, this.enemyFactory, level01);
     
     this.collisionMatrix = new CollisionMatrix(this, this.layerManager, this.player);
@@ -47,6 +48,7 @@ export class GameScene extends Phaser.Scene {
 
   onSceneShutdown() {
     this.registry.remove('playerRef');
+    this.registry.remove('enemyFactory');
     if (this._restartTimer) {
       this._restartTimer.remove(false);
       this._restartTimer = undefined;
@@ -80,6 +82,7 @@ export class GameScene extends Phaser.Scene {
 
     // Update enemies
     this.layerManager.getGroup('bgEnemies').getChildren().forEach(e => e.update(time, delta));
+    this.layerManager.getGroup('debrisEnemies').getChildren().forEach(e => e.update(time, delta));
     this.layerManager.getGroup('fgEnemies').getChildren().forEach(e => e.update(time, delta));
   }
 

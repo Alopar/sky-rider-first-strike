@@ -37,6 +37,18 @@ export class CollisionMatrix {
       enemy.takeDamage(1);
     });
 
+    // Player vs debris (серые обломки)
+    physics.add.overlap(this.player, this.lm.getGroup('debrisEnemies'), (p, enemy) => {
+      this.player.takeDamage(1);
+      enemy.takeDamage(1);
+    });
+
+    // PlayerBullets vs debris
+    physics.add.overlap(this.lm.getGroup('playerBullets'), this.lm.getGroup('debrisEnemies'), (bullet, enemy) => {
+      bullet.destroy();
+      enemy.takeDamage(1);
+    });
+
     // Player vs powerUps
     physics.add.overlap(this.player, this.lm.getGroup('powerUps'), (p, pu) => {
       pu.collect();
