@@ -30,6 +30,19 @@ const timedSideTurretsEffect = {
   bulletSpeed: 600 * S
 };
 
+/** Орбитальные сферы: временно + стак до maxSpheres (далее только таймер) */
+const orbitalCfg = gameConfig.bonuses.orbitalSphere;
+const timedStackingOrbitalsEffect = {
+  kind: 'timedStackingOrbitals',
+  durationMs: orbitalCfg.durationMs,
+  maxSpheres: orbitalCfg.maxSpheres,
+  orbitRadius: orbitalCfg.orbitRadius,
+  angularSpeedRad: orbitalCfg.angularSpeedRad,
+  hitRadius: orbitalCfg.hitRadius,
+  damage: orbitalCfg.damage,
+  hitCooldownMs: orbitalCfg.hitCooldownMs
+};
+
 export const bonusesConfig = {
   drop: {
     /** Каждые N очков счёта — проверка на выпадение бонуса */
@@ -49,6 +62,7 @@ export const bonusesConfig = {
     typeWeights: {
       fragment: 50,
       sideTurrets: 18,
+      orbitalSphere: 14,
       shield: 15,
       health: 5
     }
@@ -86,6 +100,14 @@ export const bonusesConfig = {
       hitboxRadius: 10 * S,
       ...bonusMotion,
       effect: { ...timedSideTurretsEffect }
+    },
+    orbitalSphere: {
+      id: 'orbitalSphere',
+      textureKey: 'bonus_orbital_sphere',
+      depth: 350,
+      hitboxRadius: 10 * S,
+      ...bonusMotion,
+      effect: { ...timedStackingOrbitalsEffect }
     }
   }
 };

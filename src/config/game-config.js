@@ -48,5 +48,20 @@ export const gameConfig = {
       vfxBurstDelayMs: 75,
       vfxJitter: 18
     }
+  },
+  /** Бонус: орбитальные энергосферы */
+  bonuses: {
+    orbitalSphere: {
+      /** Время действия (мс) */
+      durationMs: 15000,
+      /** Радиус орбиты вокруг корабля (px) */
+      orbitRadius: 44 * WORLD_SCALE,
+      /** Скорость вращения по орбите (радиан/с) */
+      angularSpeedRad: 2.2,
+      maxSpheres: 3,
+      hitRadius: 12 * WORLD_SCALE,
+      damage: 1,
+      hitCooldownMs: 220
+    }
   }
 };

@@ -27,7 +27,8 @@ export const palette = {
     health: '#4FE38B',
     shield: '#5FAAFF',
     fragment: '#FFB347',
-    sideTurrets: '#9CA8B8'
+    sideTurrets: '#9CA8B8',
+    orbitalSphere: '#5FAAFF'
   },
   background: {
     top: '#05060C',

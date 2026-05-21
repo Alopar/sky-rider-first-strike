@@ -28,6 +28,8 @@ export class SvgTextureFactory {
     scene.load.svg('bonus_fragment', 'assets/svg/powerups/bonus_fragment.svg', { width: R(20), height: R(20) });
     scene.load.svg('bonus_side_turrets', 'assets/svg/powerups/bonus_side_turrets.svg', { width: R(20), height: R(20) });
     scene.load.svg('player_side_turret', 'assets/svg/powerups/player_side_turret.svg', { width: R(16), height: R(12) });
+    scene.load.svg('bonus_orbital_sphere', 'assets/svg/powerups/bonus_orbital_sphere.svg', { width: R(20), height: R(20) });
+    scene.load.svg('player_orbital_sphere', 'assets/svg/powerups/player_orbital_sphere.svg', { width: R(18), height: R(18) });
     scene.load.svg('player_shield_ring', 'assets/svg/powerups/player_shield_ring.svg', { width: R(50), height: R(50) });
   }
 }
