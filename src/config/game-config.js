@@ -53,11 +53,11 @@ export const gameConfig = {
   bonuses: {
     orbitalSphere: {
       /** Время действия (мс) */
-      durationMs: 15000,
+      durationMs: 30000,
       /** Радиус орбиты вокруг корабля (px) */
-      orbitRadius: 44 * WORLD_SCALE,
+      orbitRadius: 75 * WORLD_SCALE,
       /** Скорость вращения по орбите (радиан/с) */
-      angularSpeedRad: 2.2,
+      angularSpeedRad: 5,
       maxSpheres: 3,
       hitRadius: 12 * WORLD_SCALE,
       damage: 1,
