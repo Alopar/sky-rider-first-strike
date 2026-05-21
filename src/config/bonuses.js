@@ -60,10 +60,11 @@ export const bonusesConfig = {
      * fragment — самый частый, shield реже, health реже щита.
      */
     typeWeights: {
-      fragment: 50,
-      sideTurrets: 18,
-      orbitalSphere: 14,
-      shield: 15,
+      fragment: 45,
+      weaponUpgrade: 22,
+      sideTurrets: 16,
+      orbitalSphere: 12,
+      shield: 14,
       health: 5
     }
   },
@@ -92,6 +93,14 @@ export const bonusesConfig = {
       hitboxRadius: 10 * S,
       ...bonusMotion,
       effect: { ...fragmentBurstEffect }
+    },
+    weaponUpgrade: {
+      id: 'weaponUpgrade',
+      textureKey: 'bonus_weapon',
+      depth: 350,
+      hitboxRadius: 10 * S,
+      ...bonusMotion,
+      effect: { kind: 'weaponUpgrade' }
     },
     sideTurrets: {
       id: 'sideTurrets',

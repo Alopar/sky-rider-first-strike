@@ -4,6 +4,7 @@ import { gameConfig } from '../config/game-config.js';
 import { level01 } from '../config/levels/level-01.js';
 
 const MAX_LIVES = gameConfig.player.maxHp;
+const MAX_WEAPON_LEVEL = 5;
 const LIFE_ICON = '\u2708\uFE0F';
 
 function formatElapsedMs(ms) {
@@ -93,8 +94,22 @@ export class UIOverlay {
     }
     livesBlock.value.appendChild(this.livesContainer);
 
+    const weaponBlock = buildStackedPanel('hud-panel--weapon', 'Weapon');
+    this.weaponLevelContainer = document.createElement('div');
+    this.weaponLevelContainer.className = 'hud-weapon-levels';
+    this.weaponLevelDots = [];
+    for (let i = 0; i < MAX_WEAPON_LEVEL; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'hud-weapon-dot';
+      dot.setAttribute('aria-hidden', 'true');
+      this.weaponLevelDots.push(dot);
+      this.weaponLevelContainer.appendChild(dot);
+    }
+    weaponBlock.value.appendChild(this.weaponLevelContainer);
+
     this.hudElement.appendChild(scoreBlock.panel);
     this.hudElement.appendChild(timerBlock.panel);
+    this.hudElement.appendChild(weaponBlock.panel);
     this.hudElement.appendChild(livesBlock.panel);
     this.container.appendChild(this.hudElement);
 
@@ -111,6 +126,14 @@ export class UIOverlay {
     this.container.appendChild(this.levelClearElement);
 
     this._lastHp = MAX_LIVES;
+    this.renderWeaponLevel(1);
+  }
+
+  renderWeaponLevel(level) {
+    const clamped = Math.max(1, Math.min(MAX_WEAPON_LEVEL, level));
+    this.weaponLevelDots.forEach((dot, index) => {
+      dot.classList.toggle('hud-weapon-dot--active', index < clamped);
+    });
   }
 
   renderLives(hp) {
@@ -152,6 +175,10 @@ export class UIOverlay {
       this.renderLives(hp);
     });
 
+    EventBus.on(EVT.WEAPON_LEVEL_CHANGED, (level) => {
+      this.renderWeaponLevel(level);
+    });
+
     EventBus.on(EVT.GAME_OVER, () => {
       this.gameOverElement.style.display = 'block';
       this.levelClearElement.style.display = 'none';
@@ -167,6 +194,7 @@ export class UIOverlay {
       this.scoreElement.textContent = '0';
       this.timerElement.textContent = '0:00';
       this.renderLives(MAX_LIVES);
+      this.renderWeaponLevel(1);
       this.gameOverElement.style.display = 'none';
       this.levelClearElement.style.display = 'none';
     });

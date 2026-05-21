@@ -10,6 +10,18 @@ export class CollisionMatrix {
     this.setupCollisions();
   }
 
+  onPlayerBulletHitEnemy(bullet, enemy) {
+    if (!bullet.active || !enemy.active) return;
+    if (bullet.hasHitEnemy(enemy)) return;
+
+    bullet.markEnemyHit(enemy);
+    enemy.takeDamage(1);
+
+    if (!bullet.piercing) {
+      bullet.destroy();
+    }
+  }
+
   setupCollisions() {
     const physics = this.scene.physics;
 
@@ -27,14 +39,12 @@ export class CollisionMatrix {
 
     // PlayerBullets vs fgEnemies
     physics.add.overlap(this.lm.getGroup('playerBullets'), this.lm.getGroup('fgEnemies'), (bullet, enemy) => {
-      bullet.destroy();
-      enemy.takeDamage(1);
+      this.onPlayerBulletHitEnemy(bullet, enemy);
     });
 
     // PlayerBullets vs bgEnemies
     physics.add.overlap(this.lm.getGroup('playerBullets'), this.lm.getGroup('bgEnemies'), (bullet, enemy) => {
-      bullet.destroy();
-      enemy.takeDamage(1);
+      this.onPlayerBulletHitEnemy(bullet, enemy);
     });
 
     // Player vs debris (серые обломки)
@@ -45,8 +55,7 @@ export class CollisionMatrix {
 
     // PlayerBullets vs debris
     physics.add.overlap(this.lm.getGroup('playerBullets'), this.lm.getGroup('debrisEnemies'), (bullet, enemy) => {
-      bullet.destroy();
-      enemy.takeDamage(1);
+      this.onPlayerBulletHitEnemy(bullet, enemy);
     });
 
     // Player vs powerUps

@@ -49,6 +49,12 @@ export const gameConfig = {
       vfxJitter: 18
     }
   },
+  weapon: {
+    overdrive: {
+      fireRateMultiplier: 1.25,
+      durationMs: 10000
+    }
+  },
   /** Бонус: орбитальные энергосферы */
   bonuses: {
     orbitalSphere: {

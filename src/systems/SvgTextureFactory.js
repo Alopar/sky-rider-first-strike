@@ -26,6 +26,7 @@ export class SvgTextureFactory {
     scene.load.svg('bonus_health', 'assets/svg/powerups/bonus_health.svg', { width: R(20), height: R(20) });
     scene.load.svg('bonus_shield', 'assets/svg/powerups/bonus_shield.svg', { width: R(20), height: R(20) });
     scene.load.svg('bonus_fragment', 'assets/svg/powerups/bonus_fragment.svg', { width: R(20), height: R(20) });
+    scene.load.svg('bonus_weapon', 'assets/svg/powerups/bonus_weapon.svg', { width: R(20), height: R(20) });
     scene.load.svg('bonus_side_turrets', 'assets/svg/powerups/bonus_side_turrets.svg', { width: R(20), height: R(20) });
     scene.load.svg('player_side_turret', 'assets/svg/powerups/player_side_turret.svg', { width: R(16), height: R(12) });
     scene.load.svg('bonus_orbital_sphere', 'assets/svg/powerups/bonus_orbital_sphere.svg', { width: R(20), height: R(20) });

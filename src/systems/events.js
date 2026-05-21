@@ -7,6 +7,7 @@ export const EVT = {
   SCORE_CHANGED: 'score:changed',
   WEAPON_LEVEL_CHANGED: 'weapon:level-changed',
   HP_CHANGED: 'player:hp-changed',
+  PLAYER_HP_LOST: 'player:hp-lost',
   SHIELD_CHANGED: 'player:shield-changed',
   BONUS_PICKED: 'bonus:picked',
   GAME_OVER: 'game:over',

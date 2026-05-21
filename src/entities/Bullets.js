@@ -6,11 +6,23 @@ export class PlayerBullet extends Phaser.Physics.Arcade.Sprite {
     this.setDepth(200);
   }
 
-  fire(x, y, vx, vy) {
+  fire(x, y, vx, vy, options = {}) {
+    this.piercing = options.piercing ?? false;
+    this._hitEnemies = new WeakSet();
+
     this.setPosition(x, y);
     this.setActive(true);
     this.setVisible(true);
     this.setVelocity(vx, vy);
+    this.setTint(this.piercing ? 0x5faaff : 0xffffff);
+  }
+
+  hasHitEnemy(enemy) {
+    return this._hitEnemies?.has(enemy) ?? false;
+  }
+
+  markEnemyHit(enemy) {
+    this._hitEnemies?.add(enemy);
   }
 
   update() {

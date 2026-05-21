@@ -64,6 +64,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.hp -= amount;
     EventBus.emit(EVT.PLAYER_HIT);
     EventBus.emit(EVT.HP_CHANGED, this.hp);
+    EventBus.emit(EVT.PLAYER_HP_LOST, this.hp);
 
     if (this.hp <= 0) {
       this.die();

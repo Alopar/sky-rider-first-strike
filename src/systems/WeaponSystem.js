@@ -4,33 +4,82 @@ import { PlayerBullet, EnemyBullet } from '../entities/Bullets.js';
 import { EventBus } from './EventBus.js';
 import { EVT } from './events.js';
 
+const MAX_LEVEL = Object.keys(weapons).length;
+
 export class WeaponSystem {
   constructor(scene, layerManager) {
     this.scene = scene;
     this.lm = layerManager;
     this.level = 1;
     this.lastFired = 0;
+    this.overdriveUntil = 0;
 
     this._onEnemyFire = (x, y, vx, vy, style) => this.spawnEnemyBullet(x, y, vx, vy, style);
+    this._onHpLost = () => this.downgrade();
+    this._onPlayerDead = () => {
+      this.overdriveUntil = 0;
+    };
+
     EventBus.on(EVT.ENEMY_FIRE, this._onEnemyFire, this);
+    EventBus.on(EVT.PLAYER_HP_LOST, this._onHpLost, this);
+    EventBus.on(EVT.PLAYER_DEAD, this._onPlayerDead, this);
   }
 
   destroy() {
     EventBus.off(EVT.ENEMY_FIRE, this._onEnemyFire, this);
+    EventBus.off(EVT.PLAYER_HP_LOST, this._onHpLost, this);
+    EventBus.off(EVT.PLAYER_DEAD, this._onPlayerDead, this);
+  }
+
+  getLevel() {
+    return this.level;
   }
 
   setLevel(level) {
-    this.level = Math.min(level, Object.keys(weapons).length);
+    this.level = Phaser.Math.Clamp(level, 1, MAX_LEVEL);
+    EventBus.emit(EVT.WEAPON_LEVEL_CHANGED, this.level);
   }
 
-  spawnPlayerBullet(x, y, vx, vy) {
+  upgrade(time) {
+    if (this.level < MAX_LEVEL) {
+      this.setLevel(this.level + 1);
+      return;
+    }
+    this.activateOverdrive(time);
+  }
+
+  downgrade() {
+    if (this.level <= 1) return;
+    this.overdriveUntil = 0;
+    this.setLevel(this.level - 1);
+  }
+
+  activateOverdrive(time) {
+    const duration = gameConfig.weapon.overdrive.durationMs;
+    this.overdriveUntil = time + duration;
+  }
+
+  isOverdriveActive(time) {
+    return time < this.overdriveUntil;
+  }
+
+  getFireRateMultiplier(time) {
+    return this.isOverdriveActive(time) ? gameConfig.weapon.overdrive.fireRateMultiplier : 1;
+  }
+
+  getEffectiveCooldown(time) {
+    const config = weapons[this.level];
+    return config.cooldown / this.getFireRateMultiplier(time);
+  }
+
+  spawnPlayerBullet(x, y, vx, vy, piercing = false) {
     const group = this.lm.getGroup('playerBullets');
     let bullet = group.getFirstDead(false);
     if (!bullet) {
       bullet = new PlayerBullet(this.scene, x, y);
       group.add(bullet);
     }
-    bullet.fire(x, y, vx, vy);
+    bullet.fire(x, y, vx, vy, { piercing });
     if (vx !== 0 || vy !== 0) {
       bullet.setRotation(Math.atan2(vy, vx) + Math.PI / 2);
     }
@@ -39,29 +88,31 @@ export class WeaponSystem {
 
   tryFire(player, time) {
     const config = weapons[this.level];
-    if (time > this.lastFired + config.cooldown) {
-      this.lastFired = time;
-      const dy = Math.round(10 * gameConfig.worldScale);
-      config.angles.forEach((angle) => {
-        const rad = Phaser.Math.DegToRad(angle - 90);
-        const vx = Math.cos(rad) * config.speed;
-        const vy = Math.sin(rad) * config.speed;
-        this.spawnPlayerBullet(player.x, player.y - dy, vx, vy);
-      });
-    }
+    const cooldown = this.getEffectiveCooldown(time);
+    if (time <= this.lastFired + cooldown) return;
+
+    this.lastFired = time;
+    const dy = Math.round(10 * gameConfig.worldScale);
+    const spawnY = player.y - dy;
+    const spawnX = player.x;
+    const piercing = config.piercing ?? false;
+
+    config.angles.forEach((angle) => {
+      const rad = Phaser.Math.DegToRad(angle - 90);
+      const vx = Math.cos(rad) * config.speed;
+      const vy = Math.sin(rad) * config.speed;
+      this.spawnPlayerBullet(spawnX, spawnY, vx, vy, piercing);
+    });
   }
 
   /** direction: -1 влево, +1 вправо */
   fireHorizontalShot(x, y, direction, speed) {
     const vx = direction * speed;
-    this.spawnPlayerBullet(x, y, vx, 0);
+    this.spawnPlayerBullet(x, y, vx, 0, false);
   }
 
   /**
    * Радиальный залп player_bullet (бонус «осколок»).
-   * @param {number} x
-   * @param {number} y
-   * @param {{ bulletCount: number, speed: number, spreadDeg?: number, startAngleDeg?: number }} effect
    */
   fireFragmentBurst(x, y, effect) {
     const count = effect.bulletCount ?? 12;
@@ -75,7 +126,7 @@ export class WeaponSystem {
       const rad = startRad + spreadRad * t;
       const vx = Math.cos(rad) * speed;
       const vy = Math.sin(rad) * speed;
-      this.spawnPlayerBullet(x, y, vx, vy);
+      this.spawnPlayerBullet(x, y, vx, vy, false);
     }
   }
 

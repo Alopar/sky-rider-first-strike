@@ -62,6 +62,9 @@ export class PowerUp extends Phaser.Physics.Arcade.Sprite {
     } else if (effect.kind === 'timedStackingOrbitals') {
       const orbitalSphereBonus = this.scene.registry.get('orbitalSphereBonus');
       orbitalSphereBonus?.activate(effect, this.scene.time.now);
+    } else if (effect.kind === 'weaponUpgrade') {
+      const weaponSystem = this.scene.registry.get('weaponSystem');
+      weaponSystem?.upgrade(this.scene.time.now);
     }
   }
 }
