@@ -56,6 +56,9 @@ export class PowerUp extends Phaser.Physics.Arcade.Sprite {
     } else if (effect.kind === 'fragmentBurst') {
       const weaponSystem = this.scene.registry.get('weaponSystem');
       weaponSystem?.fireFragmentBurst(player.x, player.y, effect);
+    } else if (effect.kind === 'timedSideTurrets') {
+      const sideTurretBonus = this.scene.registry.get('sideTurretBonus');
+      sideTurretBonus?.activate(effect, this.scene.time.now);
     }
   }
 }

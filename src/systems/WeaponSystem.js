@@ -23,27 +23,38 @@ export class WeaponSystem {
     this.level = Math.min(level, Object.keys(weapons).length);
   }
 
+  spawnPlayerBullet(x, y, vx, vy) {
+    const group = this.lm.getGroup('playerBullets');
+    let bullet = group.getFirstDead(false);
+    if (!bullet) {
+      bullet = new PlayerBullet(this.scene, x, y);
+      group.add(bullet);
+    }
+    bullet.fire(x, y, vx, vy);
+    if (vx !== 0 || vy !== 0) {
+      bullet.setRotation(Math.atan2(vy, vx) + Math.PI / 2);
+    }
+    return bullet;
+  }
+
   tryFire(player, time) {
     const config = weapons[this.level];
     if (time > this.lastFired + config.cooldown) {
       this.lastFired = time;
-      
-      const group = this.lm.getGroup('playerBullets');
-      
       const dy = Math.round(10 * gameConfig.worldScale);
-      config.angles.forEach(angle => {
+      config.angles.forEach((angle) => {
         const rad = Phaser.Math.DegToRad(angle - 90);
         const vx = Math.cos(rad) * config.speed;
         const vy = Math.sin(rad) * config.speed;
-        
-        let bullet = group.getFirstDead(false);
-        if (!bullet) {
-          bullet = new PlayerBullet(this.scene, player.x, player.y - dy);
-          group.add(bullet);
-        }
-        bullet.fire(player.x, player.y - dy, vx, vy);
+        this.spawnPlayerBullet(player.x, player.y - dy, vx, vy);
       });
     }
+  }
+
+  /** direction: -1 влево, +1 вправо */
+  fireHorizontalShot(x, y, direction, speed) {
+    const vx = direction * speed;
+    this.spawnPlayerBullet(x, y, vx, 0);
   }
 
   /**
@@ -59,23 +70,12 @@ export class WeaponSystem {
     const startAngleDeg = effect.startAngleDeg ?? 0;
     const spreadRad = Phaser.Math.DegToRad(spreadDeg);
     const startRad = Phaser.Math.DegToRad(startAngleDeg);
-    const group = this.lm.getGroup('playerBullets');
-
     for (let i = 0; i < count; i++) {
       const t = count > 1 ? i / count : 0;
       const rad = startRad + spreadRad * t;
       const vx = Math.cos(rad) * speed;
       const vy = Math.sin(rad) * speed;
-
-      let bullet = group.getFirstDead(false);
-      if (!bullet) {
-        bullet = new PlayerBullet(this.scene, x, y);
-        group.add(bullet);
-      }
-      bullet.fire(x, y, vx, vy);
-      if (vx !== 0 || vy !== 0) {
-        bullet.setRotation(Math.atan2(vy, vx) + Math.PI / 2);
-      }
+      this.spawnPlayerBullet(x, y, vx, vy);
     }
   }
 

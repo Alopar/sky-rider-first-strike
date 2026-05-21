@@ -26,7 +26,8 @@ export const palette = {
     weapon: '#4FE38B',
     health: '#4FE38B',
     shield: '#5FAAFF',
-    fragment: '#FFB347'
+    fragment: '#FFB347',
+    sideTurrets: '#9CA8B8'
   },
   background: {
     top: '#05060C',

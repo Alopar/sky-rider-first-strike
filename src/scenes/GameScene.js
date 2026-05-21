@@ -8,6 +8,7 @@ import { SpawnDirector } from '../systems/SpawnDirector.js';
 import { CollisionMatrix } from '../systems/CollisionMatrix.js';
 import { ScoreSystem } from '../systems/ScoreSystem.js';
 import { BonusDropSystem } from '../systems/BonusDropSystem.js';
+import { SideTurretBonusSystem } from '../systems/SideTurretBonusSystem.js';
 import { gameConfig } from '../config/game-config.js';
 import { level01 } from '../config/levels/level-01.js';
 import { EventBus } from '../systems/EventBus.js';
@@ -37,6 +38,8 @@ export class GameScene extends Phaser.Scene {
     this.collisionMatrix = new CollisionMatrix(this, this.layerManager, this.player);
     this.scoreSystem = new ScoreSystem();
     this.bonusDropSystem = new BonusDropSystem(this, this.layerManager, this.scoreSystem);
+    this.sideTurretBonus = new SideTurretBonusSystem(this, this.weaponSystem);
+    this.registry.set('sideTurretBonus', this.sideTurretBonus);
 
     this.spawnDirector.start(this.time.now);
     this._levelCleared = false;
@@ -52,6 +55,7 @@ export class GameScene extends Phaser.Scene {
   onSceneShutdown() {
     this.registry.remove('playerRef');
     this.registry.remove('weaponSystem');
+    this.registry.remove('sideTurretBonus');
     this.registry.remove('enemyFactory');
     if (this._restartTimer) {
       this._restartTimer.remove(false);
@@ -62,6 +66,7 @@ export class GameScene extends Phaser.Scene {
     this.weaponSystem?.destroy();
     this.scoreSystem?.destroy();
     this.bonusDropSystem?.destroy();
+    this.sideTurretBonus?.destroy();
   }
 
   update(time, delta) {
@@ -76,6 +81,7 @@ export class GameScene extends Phaser.Scene {
       if (this.inputManager.isFiring()) {
         this.weaponSystem.tryFire(this.player, time);
       }
+      this.sideTurretBonus.update(time, this.player);
     }
 
     this.spawnDirector.update(time);

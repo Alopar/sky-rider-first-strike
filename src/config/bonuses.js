@@ -20,6 +20,16 @@ const fragmentBurstEffect = {
   startAngleDeg: -90
 };
 
+/** Временные боковые турели (повторный подбор — только обновление таймера) */
+const timedSideTurretsEffect = {
+  kind: 'timedSideTurrets',
+  durationMs: 15000,
+  offsetX: 32 * S,
+  offsetY: 0,
+  fireCooldownMs: 280,
+  bulletSpeed: 600 * S
+};
+
 export const bonusesConfig = {
   drop: {
     /** Каждые N очков счёта — проверка на выпадение бонуса */
@@ -38,6 +48,7 @@ export const bonusesConfig = {
      */
     typeWeights: {
       fragment: 50,
+      sideTurrets: 18,
       shield: 15,
       health: 5
     }
@@ -67,6 +78,14 @@ export const bonusesConfig = {
       hitboxRadius: 10 * S,
       ...bonusMotion,
       effect: { ...fragmentBurstEffect }
+    },
+    sideTurrets: {
+      id: 'sideTurrets',
+      textureKey: 'bonus_side_turrets',
+      depth: 350,
+      hitboxRadius: 10 * S,
+      ...bonusMotion,
+      effect: { ...timedSideTurretsEffect }
     }
   }
 };
