@@ -96,13 +96,25 @@ export class WeaponSystem {
     const spawnY = player.y - dy;
     const spawnX = player.x;
     const piercing = config.piercing ?? false;
+    const shots = config.shots ?? [];
 
-    config.angles.forEach((angle) => {
-      const rad = Phaser.Math.DegToRad(angle - 90);
+    for (const shot of shots) {
+      let angleDeg = 0;
+      let offsetX = 0;
+
+      if (shot.type === 'parallel') {
+        angleDeg = 0;
+        offsetX = shot.offsetX ?? 0;
+      } else if (shot.type === 'angled') {
+        angleDeg = shot.angleDeg ?? 0;
+        offsetX = 0;
+      }
+
+      const rad = Phaser.Math.DegToRad(angleDeg - 90);
       const vx = Math.cos(rad) * config.speed;
       const vy = Math.sin(rad) * config.speed;
-      this.spawnPlayerBullet(spawnX, spawnY, vx, vy, piercing);
-    });
+      this.spawnPlayerBullet(spawnX + offsetX, spawnY, vx, vy, piercing);
+    }
   }
 
   /** direction: -1 влево, +1 вправо */
