@@ -71,8 +71,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   _applyDebrisSpin() {
-    const stage = this.enemyConfig.stage === 'large' ? 'large' : 'small';
-    const range = gameConfig.debris.spinRadPerSec[stage];
+    const stage = this.enemyConfig.stage ?? 'small';
+    const range = gameConfig.debris.spinRadPerSec[stage]
+      ?? gameConfig.debris.spinRadPerSec.small;
     const sign = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
     this._debrisSpin = Phaser.Math.FloatBetween(range.min, range.max) * sign;
   }
@@ -142,6 +143,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   die() {
+    if (this.enemyConfig.splitMode === 'radial') {
+      this._dieRadialBurst();
+      return;
+    }
     if (this.enemyConfig.splitsInto) {
       this._dieAndSplit();
       return;
@@ -169,17 +174,65 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.destroy();
   }
 
+  _fragmentScatterSpeed() {
+    const scatter = gameConfig.debris.scatterSpeed;
+    return scatter?.fragment ?? 90 * S;
+  }
+
+  _bulletScatterSpeed() {
+    const scatter = gameConfig.debris.scatterSpeed;
+    const over = scatter?.bulletOverFragment ?? 1.12;
+    return this._fragmentScatterSpeed() * over;
+  }
+
+  _dieRadialBurst() {
+    const burst = gameConfig.debris.megaBurst;
+    const x = this.x;
+    const y = this.y;
+    EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, x, y);
+    DebrisDestroyVfx.playExplosive(this.scene, x, y);
+
+    const fragmentSpeed = this._fragmentScatterSpeed();
+    const factory = this.scene.registry.get('enemyFactory');
+    const fragmentCount = burst.fragmentCount ?? 5;
+    const fragmentType = this.enemyConfig.splitsInto ?? 'debrisSmall';
+
+    for (let i = 0; i < fragmentCount; i++) {
+      const angle = (Math.PI * 2 / fragmentCount) * i;
+      factory?.spawn(fragmentType, x, y, {
+        velocity: {
+          vx: Math.cos(angle) * fragmentSpeed,
+          vy: Math.sin(angle) * fragmentSpeed
+        }
+      });
+    }
+
+    const bulletCount = burst.bulletCount ?? 8;
+    const bulletSpeed = this._bulletScatterSpeed();
+    for (let i = 0; i < bulletCount; i++) {
+      const angle = (Math.PI * 2 / bulletCount) * i + Math.PI / bulletCount;
+      EventBus.emit(
+        EVT.ENEMY_FIRE,
+        x,
+        y,
+        Math.cos(angle) * bulletSpeed,
+        Math.sin(angle) * bulletSpeed,
+        'round'
+      );
+    }
+
+    this.destroy();
+  }
+
   _dieAndSplit() {
     EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, this.x, this.y);
     DebrisDestroyVfx.play(this.scene, this.x, this.y, { stage: 'large' });
 
     const vx = this.body?.velocity?.x ?? 0;
     const vy = this.body?.velocity?.y ?? 0;
-    const speed = Math.hypot(vx, vy) || this.enemyConfig.speed;
     const moveAngle = Math.hypot(vx, vy) > 1 ? Math.atan2(vy, vx) : Math.PI / 2;
     const splitAngle = this.enemyConfig.splitAngleRad ?? gameConfig.debris.splitAngleRad;
-    const factor = this.enemyConfig.splitSpeedFactor ?? gameConfig.debris.splitSpeedFactor;
-    const fragmentSpeed = speed * factor;
+    const fragmentSpeed = this._fragmentScatterSpeed();
     const factory = this.scene.registry.get('enemyFactory');
 
     for (const sign of [-1, 1]) {

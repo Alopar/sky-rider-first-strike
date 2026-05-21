@@ -6,7 +6,8 @@ const D = gameConfig.debris;
 /** Псевдотипы волн: случайный вариант из списка */
 export const DEBRIS_WAVE_TYPES = {
   debrisLarge: ['debrisLargeRock', 'debrisLargeChunk', 'debrisLargeShard'],
-  debrisSmall: ['debrisSmallRock', 'debrisSmallChunk', 'debrisSmallShard']
+  debrisSmall: ['debrisSmallRock', 'debrisSmallChunk', 'debrisSmallShard'],
+  debrisMega: ['debrisMegaCharge']
 };
 
 export function resolveEnemyType(typeId) {
@@ -21,8 +22,7 @@ const debrisBase = {
   layer: 'debrisEnemies',
   behavior: 'debrisDrift',
   speedVariance: D.speedVariance,
-  splitAngleRad: D.splitAngleRad,
-  splitSpeedFactor: D.splitSpeedFactor
+  splitAngleRad: D.splitAngleRad
 };
 
 export const enemiesConfig = {
@@ -123,13 +123,26 @@ export const enemiesConfig = {
     hitboxRadius: 11 * S,
     colors: { body: '#4a2550', stroke: '#c080e8' }
   },
+  debrisMegaCharge: {
+    ...debrisBase,
+    id: 'debrisMegaCharge',
+    stage: 'mega',
+    splitMode: 'radial',
+    splitsInto: 'debrisSmall',
+    textureKey: 'enemy_debris_mega_charge',
+    hp: 15,
+    score: 55,
+    speed: 58 * S,
+    hitboxRadius: 20 * S,
+    colors: { body: '#6E7888', stroke: '#5C6675', charge: '#D63A3A', warn: '#FFD23F' }
+  },
   debrisLargeRock: {
     ...debrisBase,
     id: 'debrisLargeRock',
     stage: 'large',
     textureKey: 'enemy_debris_large_rock',
     splitsInto: 'debrisSmallRock',
-    hp: 1,
+    hp: 5,
     score: 25,
     speed: 78 * S,
     hitboxRadius: 14 * S,
@@ -141,7 +154,7 @@ export const enemiesConfig = {
     stage: 'large',
     textureKey: 'enemy_debris_large_chunk',
     splitsInto: 'debrisSmallChunk',
-    hp: 1,
+    hp: 5,
     score: 25,
     speed: 72 * S,
     hitboxRadius: 13 * S,
@@ -153,7 +166,7 @@ export const enemiesConfig = {
     stage: 'large',
     textureKey: 'enemy_debris_large_shard',
     splitsInto: 'debrisSmallShard',
-    hp: 1,
+    hp: 5,
     score: 25,
     speed: 85 * S,
     hitboxRadius: 12 * S,

@@ -25,12 +25,26 @@ export const gameConfig = {
     speedVariance: 0.15,
     /** Угол отклонения осколков от вектора полёта при расколе (радианы) */
     splitAngleRad: 0.55,
-    /** Скорость осколков относительно родителя */
-    splitSpeedFactor: 0.92,
+    /** Скорость разлёта осколков и пуль при уничтожении */
+    scatterSpeed: {
+      /** Как у малых астероидов (пикс/с) */
+      fragment: 95 * WORLD_SCALE,
+      /** Пули чуть быстрее осколков */
+      bulletOverFragment: 1.12
+    },
     /** Вращение вокруг оси (радиан/с) */
     spinRadPerSec: {
+      mega: { min: 0.8, max: 1.5 },
       large: { min: 1.4, max: 2.8 },
       small: { min: 2.2, max: 4.2 }
+    },
+    /** Радиальный взрыв мега-астероида */
+    megaBurst: {
+      fragmentCount: 5,
+      bulletCount: 8,
+      vfxBursts: 3,
+      vfxBurstDelayMs: 75,
+      vfxJitter: 18
     }
   }
 };

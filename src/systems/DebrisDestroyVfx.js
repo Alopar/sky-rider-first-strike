@@ -8,7 +8,7 @@ const S = gameConfig.worldScale;
 export class DebrisDestroyVfx {
   static play(scene, x, y, opts = {}) {
     const stage = opts.stage ?? 'small';
-    const isLarge = stage === 'large';
+    const isLarge = stage === 'large' || stage === 'mega';
 
     DebrisDestroyVfx._shockwave(scene, x, y, isLarge);
     DebrisDestroyVfx._chips(scene, x, y, isLarge);
@@ -18,17 +18,104 @@ export class DebrisDestroyVfx {
     }
   }
 
-  static _shockwave(scene, x, y, isLarge) {
-    const ring = scene.add.circle(x, y, 6 * S, 0xb8c4d4, 0.55).setDepth(420);
+  /** Серия из 3 смещённых взрывов (мега-астероид) */
+  static playExplosive(scene, x, y) {
+    const cfg = gameConfig.debris.megaBurst;
+    const bursts = cfg.vfxBursts ?? 3;
+    const delay = cfg.vfxBurstDelayMs ?? 75;
+    const jitter = (cfg.vfxJitter ?? 18) * S;
+
+    DebrisDestroyVfx._chips(scene, x, y, true);
+    DebrisDestroyVfx._explosionSparks(scene, x, y, 20);
+
+    for (let i = 0; i < bursts; i++) {
+      scene.time.delayedCall(i * delay, () => {
+        if (!scene.sys?.isActive()) return;
+        const ox = x + Phaser.Math.FloatBetween(-jitter, jitter);
+        const oy = y + Phaser.Math.FloatBetween(-jitter, jitter);
+        DebrisDestroyVfx._shockwave(scene, ox, oy, true, {
+          color: 0xff6b4a,
+          maxScale: 5.5 + i * 1.2,
+          duration: 280 + i * 40
+        });
+        DebrisDestroyVfx._explosionCore(scene, ox, oy);
+        DebrisDestroyVfx._explosionSparks(scene, ox, oy, 10 + i * 2);
+        DebrisDestroyVfx._fireDust(scene, ox, oy);
+      });
+    }
+  }
+
+  static _shockwave(scene, x, y, isLarge, opts = {}) {
+    const color = opts.color ?? 0xb8c4d4;
+    const maxScale = opts.maxScale ?? (isLarge ? 5.5 : 3.2);
+    const duration = opts.duration ?? (isLarge ? 320 : 200);
+    const ring = scene.add.circle(x, y, 6 * S, color, 0.55).setDepth(420);
     scene.tweens.add({
       targets: ring,
-      scaleX: isLarge ? 5.5 : 3.2,
-      scaleY: isLarge ? 5.5 : 3.2,
+      scaleX: maxScale,
+      scaleY: maxScale,
       alpha: 0,
-      duration: isLarge ? 320 : 200,
+      duration,
       ease: 'Cubic.easeOut',
       onComplete: () => ring.destroy()
     });
+  }
+
+  static _explosionCore(scene, x, y) {
+    const core = scene.add.circle(x, y, 10 * S, 0xffe8d8, 0.9).setDepth(423);
+    scene.tweens.add({
+      targets: core,
+      scaleX: 2.8,
+      scaleY: 2.8,
+      alpha: 0,
+      duration: 180,
+      ease: 'Quad.easeOut',
+      onComplete: () => core.destroy()
+    });
+  }
+
+  static _explosionSparks(scene, x, y, count) {
+    const colors = [0xff5540, 0xff8a5c, 0xffd23f, 0xff6b6b];
+    for (let i = 0; i < count; i++) {
+      const spark = scene.add
+        .circle(x, y, Phaser.Math.Between(2, 5) * S, colors[i % colors.length], 0.95)
+        .setDepth(424);
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const dist = Phaser.Math.Between(25, 70) * S;
+      scene.tweens.add({
+        targets: spark,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist,
+        alpha: 0,
+        scaleX: 0.1,
+        scaleY: 0.1,
+        duration: Phaser.Math.Between(160, 320),
+        ease: 'Cubic.easeOut',
+        onComplete: () => spark.destroy()
+      });
+    }
+  }
+
+  static _fireDust(scene, x, y) {
+    for (let i = 0; i < 4; i++) {
+      const r = Phaser.Math.Between(10, 18) * S;
+      const puff = scene.add
+        .circle(x, y, r, 0xff6b4a, Phaser.Math.FloatBetween(0.3, 0.5))
+        .setDepth(419);
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const drift = Phaser.Math.Between(20, 45) * S;
+      scene.tweens.add({
+        targets: puff,
+        x: x + Math.cos(angle) * drift,
+        y: y + Math.sin(angle) * drift,
+        scaleX: 2,
+        scaleY: 2,
+        alpha: 0,
+        duration: Phaser.Math.Between(300, 450),
+        ease: 'Quad.easeOut',
+        onComplete: () => puff.destroy()
+      });
+    }
   }
 
   static _chips(scene, x, y, isLarge) {

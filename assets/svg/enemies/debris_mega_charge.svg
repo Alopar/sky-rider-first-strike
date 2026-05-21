@@ -1,0 +1,19 @@
+<svg width="52" height="52" xmlns="http://www.w3.org/2000/svg">
+  <path d="M26 3 L42 12 L48 28 L38 46 L18 48 L6 32 L8 14 L16 6 Z" fill="#6E7888" stroke="#5C6675" stroke-width="2"/>
+  <path d="M26 3 L42 12 L48 28 L38 46 L18 48 L6 32 L8 14 L16 6 Z" fill="url(#mg)" opacity="0.3"/>
+  <!-- 27@K2G0B:0: :@0A=K5 :0?AC;K 8 8=48:0B>@K -->
+  <ellipse cx="18" cy="18" rx="5" ry="3.5" fill="#D63A3A" stroke="#FF6B6B" stroke-width="1.2"/>
+  <ellipse cx="34" cy="22" rx="4.5" ry="3" fill="#C42E2E" stroke="#FF8A7A" stroke-width="1.2"/>
+  <rect x="22" y="30" width="9" height="5" rx="2" fill="#E84A3A" stroke="#FFB07A" stroke-width="1" transform="rotate(-18 26.5 32.5)"/>
+  <circle cx="30" cy="14" r="3.5" fill="#FF5540" stroke="#FFD0C8" stroke-width="1"/>
+  <circle cx="14" cy="32" r="2.8" fill="#D63A3A"/>
+  <circle cx="38" cy="36" r="2.5" fill="#B82E2E"/>
+  <path d="M24 12 L28 12 L26 16 Z" fill="#FFD23F"/>
+  <path d="M36 30 L40 32 L35 34 Z" fill="#FFD23F"/>
+  <defs>
+    <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#9CA8B8"/>
+      <stop offset="100%" stop-color="#4A5260"/>
+    </linearGradient>
+  </defs>
+</svg>

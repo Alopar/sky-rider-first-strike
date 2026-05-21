@@ -14,7 +14,9 @@ export const palette = {
     debrisBody: '#7A8494',
     debrisLight: '#9CA8B8',
     debrisDark: '#4A5260',
-    debrisCrater: '#2E3540'
+    debrisCrater: '#2E3540',
+    debrisCharge: '#D63A3A',
+    debrisWarn: '#FFD23F'
   },
   boss: {
     body: '#8B1E3F',
