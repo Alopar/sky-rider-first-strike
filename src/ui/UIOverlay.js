@@ -3,7 +3,7 @@ import { EVT } from '../systems/events.js';
 import { gameConfig } from '../config/game-config.js';
 import { level01 } from '../config/levels/level-01.js';
 
-const MAX_LIVES = 3;
+const MAX_LIVES = gameConfig.player.maxHp;
 const LIFE_ICON = '\u2708\uFE0F';
 
 function formatElapsedMs(ms) {

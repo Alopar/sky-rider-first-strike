@@ -7,6 +7,7 @@ import { EnemyFactory } from '../systems/EnemyFactory.js';
 import { SpawnDirector } from '../systems/SpawnDirector.js';
 import { CollisionMatrix } from '../systems/CollisionMatrix.js';
 import { ScoreSystem } from '../systems/ScoreSystem.js';
+import { BonusDropSystem } from '../systems/BonusDropSystem.js';
 import { gameConfig } from '../config/game-config.js';
 import { level01 } from '../config/levels/level-01.js';
 import { EventBus } from '../systems/EventBus.js';
@@ -34,7 +35,8 @@ export class GameScene extends Phaser.Scene {
     
     this.collisionMatrix = new CollisionMatrix(this, this.layerManager, this.player);
     this.scoreSystem = new ScoreSystem();
-    
+    this.bonusDropSystem = new BonusDropSystem(this, this.layerManager, this.scoreSystem);
+
     this.spawnDirector.start(this.time.now);
     this._levelCleared = false;
     this._lastTimerSecond = -1;
@@ -57,6 +59,7 @@ export class GameScene extends Phaser.Scene {
     EventBus.off(EVT.LEVEL_COMPLETE, this.onLevelComplete, this);
     this.weaponSystem?.destroy();
     this.scoreSystem?.destroy();
+    this.bonusDropSystem?.destroy();
   }
 
   update(time, delta) {
@@ -84,6 +87,7 @@ export class GameScene extends Phaser.Scene {
     this.layerManager.getGroup('bgEnemies').getChildren().forEach(e => e.update(time, delta));
     this.layerManager.getGroup('debrisEnemies').getChildren().forEach(e => e.update(time, delta));
     this.layerManager.getGroup('fgEnemies').getChildren().forEach(e => e.update(time, delta));
+    this.layerManager.getGroup('powerUps').getChildren().forEach(pu => pu.update(delta));
   }
 
   updateLevelTimer(time) {
@@ -112,6 +116,7 @@ export class GameScene extends Phaser.Scene {
     this._restartTimer = this.time.delayedCall(2000, () => {
       this._restartTimer = undefined;
       this.scoreSystem.reset();
+      this.bonusDropSystem.reset();
       this.scene.restart();
     });
   }

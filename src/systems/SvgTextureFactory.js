@@ -23,5 +23,8 @@ export class SvgTextureFactory {
     scene.load.svg('enemy_debris_small_rock', 'assets/svg/enemies/debris_small_rock.svg', { width: R(20), height: R(20) });
     scene.load.svg('enemy_debris_small_chunk', 'assets/svg/enemies/debris_small_chunk.svg', { width: R(22), height: R(18) });
     scene.load.svg('enemy_debris_small_shard', 'assets/svg/enemies/debris_small_shard.svg', { width: R(18), height: R(20) });
+    scene.load.svg('bonus_health', 'assets/svg/powerups/bonus_health.svg', { width: R(20), height: R(20) });
+    scene.load.svg('bonus_shield', 'assets/svg/powerups/bonus_shield.svg', { width: R(20), height: R(20) });
+    scene.load.svg('player_shield_ring', 'assets/svg/powerups/player_shield_ring.svg', { width: R(50), height: R(50) });
   }
 }

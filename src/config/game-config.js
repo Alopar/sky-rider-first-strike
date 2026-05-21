@@ -10,7 +10,9 @@ export const gameConfig = {
     speed: Math.round(300 * WORLD_SCALE),
     hitboxRadius: 8 * WORLD_SCALE,
     /** Половина стороны квадрата текстуры игрока (подстройка круга физики) */
-    textureHalf: 16 * WORLD_SCALE
+    textureHalf: 16 * WORLD_SCALE,
+    startHp: 3,
+    maxHp: 3
   },
   /** Зоны появления врагов (доли ширины экрана, 0–1) */
   spawnZones: {
