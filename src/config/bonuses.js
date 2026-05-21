@@ -12,13 +12,13 @@ const bonusMotion = {
 export const bonusesConfig = {
   drop: {
     /** Каждые N очков счёта — проверка на выпадение бонуса */
-    scoreInterval: 200,
+    scoreInterval: 100,
     /** Первая проверка при достижении этого счёта */
-    firstCheckAt: 200,
+    firstCheckAt: 100,
     /** Стартовый шанс выпадения (0–1) */
-    baseChance: 0.25,
+    baseChance: 0.1,
     /** При неудаче шанс увеличивается на эту величину до следующей проверки */
-    chanceIncrement: 0.05,
+    chanceIncrement: 0.1,
     /** Потолок шанса (1 = гарантия при накоплении) */
     maxChance: 1
   },
