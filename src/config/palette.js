@@ -25,7 +25,8 @@ export const palette = {
   powerups: {
     weapon: '#4FE38B',
     health: '#4FE38B',
-    shield: '#5FAAFF'
+    shield: '#5FAAFF',
+    fragment: '#FFB347'
   },
   background: {
     top: '#05060C',

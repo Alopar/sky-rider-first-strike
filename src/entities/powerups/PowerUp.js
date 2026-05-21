@@ -48,11 +48,14 @@ export class PowerUp extends Phaser.Physics.Arcade.Sprite {
   }
 
   applyEffect(player) {
-    const { kind, amount } = this.bonusConfig.effect;
-    if (kind === 'heal') {
-      player.heal(amount);
-    } else if (kind === 'shield') {
+    const effect = this.bonusConfig.effect;
+    if (effect.kind === 'heal') {
+      player.heal(effect.amount);
+    } else if (effect.kind === 'shield') {
       player.grantShield();
+    } else if (effect.kind === 'fragmentBurst') {
+      const weaponSystem = this.scene.registry.get('weaponSystem');
+      weaponSystem?.fireFragmentBurst(player.x, player.y, effect);
     }
   }
 }

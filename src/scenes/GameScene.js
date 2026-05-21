@@ -28,6 +28,7 @@ export class GameScene extends Phaser.Scene {
     this.registry.set('playerRef', this.player);
     this.weaponSystem = new WeaponSystem(this, this.layerManager);
     this.weaponSystem.setLevel(1);
+    this.registry.set('weaponSystem', this.weaponSystem);
     
     this.enemyFactory = new EnemyFactory(this, this.layerManager);
     this.registry.set('enemyFactory', this.enemyFactory);
@@ -50,6 +51,7 @@ export class GameScene extends Phaser.Scene {
 
   onSceneShutdown() {
     this.registry.remove('playerRef');
+    this.registry.remove('weaponSystem');
     this.registry.remove('enemyFactory');
     if (this._restartTimer) {
       this._restartTimer.remove(false);
