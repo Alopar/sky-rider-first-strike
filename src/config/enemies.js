@@ -71,6 +71,32 @@ export const enemiesConfig = {
     fireOffsetY: 10,
     colors: { body: '#8B2222', stroke: '#FF6B6B' }
   },
+  dreadnought: {
+    id: 'dreadnought',
+    spawnZone: 'main',
+    textureKey: 'enemy_dreadnought',
+    hp: 12,
+    score: 120,
+    speed: 48 * S,
+    layer: 'fgEnemies',
+    behavior: 'straightDown',
+    facingDown: true,
+    hitboxRect: { w: 28 * S, h: 76 * S },
+    fireRate: 3400,
+    fireMode: 'burstForward',
+    bulletStyle: 'round',
+    bulletSpeed: 210 * S,
+    burstSalvos: 3,
+    burstSalvoSize: 3,
+    burstSalvoDelayMs: 160,
+    burstSpreadRad: 0.14,
+    firePoints: [
+      { x: -8 * S, y: 22 * S },
+      { x: 0, y: 44 * S },
+      { x: 8 * S, y: 66 * S }
+    ],
+    colors: { body: '#7A1E1E', stroke: '#FF6B6B' }
+  },
   drifter: {
     id: 'drifter',
     textureKey: 'enemy_drifter',

@@ -14,6 +14,7 @@ export class SvgTextureFactory {
     scene.load.svg('enemy_orb', 'assets/svg/enemies/orb.svg', { width: R(24), height: R(24) });
     scene.load.svg('enemy_wobbler', 'assets/svg/enemies/wobbler.svg', { width: R(26), height: R(26) });
     scene.load.svg('enemy_bastion', 'assets/svg/enemies/bastion.svg', { width: R(32), height: R(48) });
+    scene.load.svg('enemy_dreadnought', 'assets/svg/enemies/dreadnought.svg', { width: R(32), height: R(96) });
     scene.load.svg('enemy_striker', 'assets/svg/enemies/striker.svg', { width: R(32), height: R(32) });
     scene.load.svg('enemy_rammer', 'assets/svg/enemies/rammer.svg', { width: R(30), height: R(30) });
     scene.load.svg('enemy_debris_mega_charge', 'assets/svg/enemies/debris_mega_charge.svg', { width: R(52), height: R(52) });

@@ -54,6 +54,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.zigPhase = Phaser.Math.FloatBetween(0, Math.PI * 2);
     if (this.body) this.setAngularVelocity(0);
     this._debrisSpin = 0;
+    this._burstActive = false;
     this._applySpawnRotation();
 
     const { behavior } = this.enemyConfig;
@@ -266,10 +267,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     this._updateFlightRotation();
 
-    if (this.enemyConfig.fireRate && this.enemyConfig.layer === 'fgEnemies') {
+    if (this.enemyConfig.fireRate && this.enemyConfig.layer === 'fgEnemies' && !this._burstActive) {
       if (time > this.lastFired + this.enemyConfig.fireRate) {
         this.lastFired = time;
-        this.fireBullet();
+        if (this.enemyConfig.fireMode === 'burstForward') {
+          this._fireBurstForward();
+        } else {
+          this.fireBullet();
+        }
       }
     }
 
@@ -282,6 +287,62 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       }
     } else if (this.y > h + 120) {
       this.destroy();
+    }
+  }
+
+  _fireBurstForward() {
+    const cfg = this.enemyConfig;
+    const salvos = cfg.burstSalvos ?? 3;
+    const delay = cfg.burstSalvoDelayMs ?? 160;
+    this._burstActive = true;
+
+    for (let s = 0; s < salvos; s++) {
+      this.scene.time.delayedCall(s * delay, () => {
+        if (!this.active) return;
+        this._fireForwardSalvo();
+      });
+    }
+
+    this.scene.time.delayedCall((salvos - 1) * delay + 80, () => {
+      this._burstActive = false;
+    });
+  }
+
+  _fireForwardSalvo() {
+    const cfg = this.enemyConfig;
+    const speed = cfg.bulletSpeed;
+    const size = cfg.burstSalvoSize ?? 3;
+    const spread = cfg.burstSpreadRad ?? 0.12;
+    const style = cfg.bulletStyle ?? 'round';
+    const points = cfg.firePoints;
+    const down = Math.PI / 2;
+
+    const emit = (ox, oy, spreadT) => {
+      const angle = down + spreadT * spread;
+      EventBus.emit(
+        EVT.ENEMY_FIRE,
+        ox,
+        oy,
+        Math.cos(angle) * speed,
+        Math.sin(angle) * speed,
+        style
+      );
+    };
+
+    if (points?.length) {
+      const n = Math.min(size, points.length);
+      for (let i = 0; i < n; i++) {
+        const pt = points[i];
+        const t = n > 1 ? (i / (n - 1) - 0.5) * 2 : 0;
+        emit(this.x + pt.x, this.y + pt.y, t);
+      }
+      return;
+    }
+
+    const offsetY = (cfg.fireOffsetY ?? 0) * S;
+    for (let i = 0; i < size; i++) {
+      const t = size > 1 ? (i / (size - 1) - 0.5) * 2 : 0;
+      emit(this.x, this.y + offsetY, t);
     }
   }
 
