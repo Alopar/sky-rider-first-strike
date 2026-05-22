@@ -14,6 +14,7 @@ import { gameConfig } from '../config/game-config.js';
 import { level01 } from '../config/levels/level-01.js';
 import { EventBus } from '../systems/EventBus.js';
 import { EVT } from '../systems/events.js';
+import { AudioBus } from '../systems/AudioBus.js';
 
 export class GameScene extends Phaser.Scene {
   constructor() {
@@ -44,6 +45,9 @@ export class GameScene extends Phaser.Scene {
     this.orbitalSphereBonus = new OrbitalSphereBonusSystem(this, this.layerManager);
     this.registry.set('orbitalSphereBonus', this.orbitalSphereBonus);
 
+    this.audioBus = new AudioBus(this);
+    this.audioBus.init();
+
     this.spawnDirector.start(this.time.now);
     this._levelCleared = false;
     this._lastTimerSecond = -1;
@@ -72,6 +76,8 @@ export class GameScene extends Phaser.Scene {
     this.bonusDropSystem?.destroy();
     this.sideTurretBonus?.destroy();
     this.orbitalSphereBonus?.destroy();
+    this.audioBus?.destroy();
+    this.audioBus = undefined;
   }
 
   update(time, delta) {

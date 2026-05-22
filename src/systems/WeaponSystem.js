@@ -92,6 +92,7 @@ export class WeaponSystem {
     if (time <= this.lastFired + cooldown) return;
 
     this.lastFired = time;
+    EventBus.emit(EVT.PLAYER_FIRE);
     const dy = Math.round(10 * gameConfig.worldScale);
     const spawnY = player.y - dy;
     const spawnX = player.x;

@@ -139,7 +139,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       x,
       y,
       guaranteedBonusDrop: !!this.enemyConfig.guaranteedBonusDrop,
-      bonusDropChanceBonus: this.enemyConfig.bonusDropChanceBonus ?? 0
+      bonusDropChanceBonus: this.enemyConfig.bonusDropChanceBonus ?? 0,
+      layer: this.enemyConfig.layer,
+      id: this.enemyConfig.id,
+      stage: this.enemyConfig.stage,
+      enemyKind: this.enemyConfig.enemyKind
     });
   }
 

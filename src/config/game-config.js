@@ -66,6 +66,11 @@ export const gameConfig = {
       durationMs: 10000
     }
   },
+  audio: {
+    /** Включить звуковые эффекты */
+    sfxEnabled: false,
+    sfxVolume: 1.0
+  },
   /** Бонус: орбитальные энергосферы */
   bonuses: {
     orbitalSphere: {

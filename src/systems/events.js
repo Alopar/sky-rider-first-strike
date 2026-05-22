@@ -1,4 +1,5 @@
 export const EVT = {
+  PLAYER_FIRE: 'player:fire',
   PLAYER_HIT: 'player:hit',
   PLAYER_DEAD: 'player:dead',
   ENEMY_FIRE: 'enemy:fire',
