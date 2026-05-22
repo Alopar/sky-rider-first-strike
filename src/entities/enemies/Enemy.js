@@ -55,7 +55,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (this.body) this.setAngularVelocity(0);
     this._debrisSpin = 0;
     this._burstActive = false;
+    this._flightSpin = 0;
     this._applySpawnRotation();
+    this._applyFlightSpin();
 
     const { behavior } = this.enemyConfig;
     if (options.velocity) {
@@ -69,6 +71,13 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     if (behavior === 'debrisDrift') {
       this._applyDebrisSpin();
     }
+  }
+
+  _applyFlightSpin() {
+    if (!this.enemyConfig.spinInFlight) return;
+    const speed = this.enemyConfig.spinRadPerSec ?? 2.2;
+    const sign = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
+    this._flightSpin = speed * sign;
   }
 
   _applyDebrisSpin() {
@@ -129,7 +138,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       score: this.enemyConfig.score,
       x,
       y,
-      guaranteedBonusDrop: !!this.enemyConfig.guaranteedBonusDrop
+      guaranteedBonusDrop: !!this.enemyConfig.guaranteedBonusDrop,
+      bonusDropChanceBonus: this.enemyConfig.bonusDropChanceBonus ?? 0
     });
   }
 
@@ -263,6 +273,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     // debrisDrift: скорость задаётся при спавне, не перезаписываем
     if (behavior === 'debrisDrift' && this._debrisSpin) {
       this.rotation += this._debrisSpin * (dtMs / 1000);
+    } else if (this.enemyConfig.spinInFlight && this._flightSpin) {
+      this.rotation += this._flightSpin * (dtMs / 1000);
     }
 
     this._updateFlightRotation();

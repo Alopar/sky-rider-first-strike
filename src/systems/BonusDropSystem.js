@@ -31,6 +31,13 @@ export class BonusDropSystem {
       this.spawnBonus(kill.x, kill.y);
     }
 
+    if (kill.bonusDropChanceBonus > 0) {
+      this.currentChance = Math.min(
+        this.maxChance,
+        this.currentChance + kill.bonusDropChanceBonus
+      );
+    }
+
     const currentScore = this.scoreSystem.score;
 
     while (currentScore >= this.nextCheckAt) {

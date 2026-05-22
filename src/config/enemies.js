@@ -101,12 +101,15 @@ export const enemiesConfig = {
     id: 'drifter',
     textureKey: 'enemy_drifter',
     hp: 1,
-    score: 10,
-    speed: 100 * S,
+    score: 5,
+    speed: 52 * S,
     layer: 'bgEnemies',
     behavior: 'straightDown',
-    hitboxRadius: 10 * S,
-    colors: { body: '#B85A1F', stroke: '#FFB07A' }
+    spinInFlight: true,
+    spinRadPerSec: 1.3,
+    bonusDropChanceBonus: 0.05,
+    hitboxRect: { w: 10 * S, h: 10 * S },
+    colors: { body: '#8A4A18', stroke: '#FFB07A' }
   },
   hauler: {
     id: 'hauler',
