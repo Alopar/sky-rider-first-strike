@@ -123,6 +123,15 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this._updateFlightRotation();
   }
 
+  _emitKilled(x, y) {
+    EventBus.emit(EVT.ENEMY_KILLED, {
+      score: this.enemyConfig.score,
+      x,
+      y,
+      guaranteedBonusDrop: !!this.enemyConfig.guaranteedBonusDrop
+    });
+  }
+
   takeDamage(amount) {
     this.hp -= amount;
     EventBus.emit(EVT.ENEMY_HIT, this);
@@ -152,7 +161,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       return;
     }
 
-    EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, this.x, this.y);
+    this._emitKilled(this.x, this.y);
     if (this.enemyConfig.layer === 'debrisEnemies') {
       DebrisDestroyVfx.play(this.scene, this.x, this.y, { stage: this.enemyConfig.stage ?? 'small' });
       this.destroy();
@@ -199,7 +208,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     const burst = gameConfig.debris.megaBurst;
     const x = this.x;
     const y = this.y;
-    EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, x, y);
+    this._emitKilled(x, y);
     DebrisDestroyVfx.playExplosive(this.scene, x, y);
 
     const factory = this.scene.registry.get('enemyFactory');
@@ -213,7 +222,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   _dieAndSplit() {
-    EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, this.x, this.y);
+    this._emitKilled(this.x, this.y);
     DebrisDestroyVfx.play(this.scene, this.x, this.y, { stage: 'large' });
 
     const vx = this.body?.velocity?.x ?? 0;

@@ -23,12 +23,19 @@ export class BonusDropSystem {
     this.currentChance = drop.baseChance;
   }
 
-  onEnemyKilled(_points, x, y) {
+  onEnemyKilled(payload) {
+    const kill = typeof payload === 'object'
+      ? payload
+      : { score: payload, guaranteedBonusDrop: false };
+    if (kill.guaranteedBonusDrop && kill.x != null && kill.y != null) {
+      this.spawnBonus(kill.x, kill.y);
+    }
+
     const currentScore = this.scoreSystem.score;
 
     while (currentScore >= this.nextCheckAt) {
-      if (Math.random() < this.currentChance) {
-        this.spawnBonus(x, y);
+      if (Math.random() < this.currentChance && kill.x != null && kill.y != null) {
+        this.spawnBonus(kill.x, kill.y);
         this.currentChance = this.baseChance;
       } else {
         this.currentChance = Math.min(

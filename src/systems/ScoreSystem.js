@@ -8,7 +8,8 @@ export class ScoreSystem {
     EventBus.on(EVT.ENEMY_KILLED, this.onEnemyKilled, this);
   }
 
-  onEnemyKilled(points) {
+  onEnemyKilled(payload) {
+    const points = typeof payload === 'object' ? payload.score : payload;
     this.addScore(points);
   }
 

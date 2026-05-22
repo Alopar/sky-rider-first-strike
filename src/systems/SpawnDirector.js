@@ -31,14 +31,35 @@ export class SpawnDirector {
 
   _getSpawnRatioBounds(typeId) {
     const enemy = enemiesConfig[typeId];
-    if (!enemy || enemy.spawnZone !== 'main') return null;
-    const margin = gameConfig.spawnZones.main.sideMarginRatio;
-    return { min: margin, max: 1 - margin };
+    if (!enemy) return null;
+    if (enemy.spawnZone === 'main') {
+      const margin = gameConfig.spawnZones.main.sideMarginRatio;
+      return { mode: 'center', min: margin, max: 1 - margin };
+    }
+    if (enemy.spawnZone === 'side') {
+      return { mode: 'side', ...gameConfig.spawnZones.side };
+    }
+    return null;
   }
 
   _clampSpawnRatio(r, bounds) {
     if (!bounds) return Phaser.Math.Clamp(r, 0.02, 0.98);
-    return Phaser.Math.Clamp(r, bounds.min, bounds.max);
+    if (bounds.mode === 'center') {
+      return Phaser.Math.Clamp(r, bounds.min, bounds.max);
+    }
+    if (bounds.mode === 'side') {
+      if (r <= bounds.leftMax) {
+        return Phaser.Math.Clamp(r, bounds.leftMin, bounds.leftMax);
+      }
+      if (r >= bounds.rightMin) {
+        return Phaser.Math.Clamp(r, bounds.rightMin, bounds.rightMax);
+      }
+      if (Phaser.Math.Between(0, 1) === 0) {
+        return Phaser.Math.FloatBetween(bounds.leftMin, bounds.leftMax);
+      }
+      return Phaser.Math.FloatBetween(bounds.rightMin, bounds.rightMax);
+    }
+    return Phaser.Math.Clamp(r, 0.02, 0.98);
   }
 
   /**
