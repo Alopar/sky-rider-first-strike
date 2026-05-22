@@ -1,15 +1,36 @@
 <svg width="52" height="52" xmlns="http://www.w3.org/2000/svg">
-  <path d="M26 3 L42 12 L48 28 L38 46 L18 48 L6 32 L8 14 L16 6 Z" fill="#6E7888" stroke="#5C6675" stroke-width="2"/>
-  <path d="M26 3 L42 12 L48 28 L38 46 L18 48 L6 32 L8 14 L16 6 Z" fill="url(#mg)" opacity="0.3"/>
-  <!-- 27@K2G0B:0: :@0A=K5 :0?AC;K 8 8=48:0B>@K -->
-  <ellipse cx="18" cy="18" rx="5" ry="3.5" fill="#D63A3A" stroke="#FF6B6B" stroke-width="1.2"/>
-  <ellipse cx="34" cy="22" rx="4.5" ry="3" fill="#C42E2E" stroke="#FF8A7A" stroke-width="1.2"/>
-  <rect x="22" y="30" width="9" height="5" rx="2" fill="#E84A3A" stroke="#FFB07A" stroke-width="1" transform="rotate(-18 26.5 32.5)"/>
-  <circle cx="30" cy="14" r="3.5" fill="#FF5540" stroke="#FFD0C8" stroke-width="1"/>
-  <circle cx="14" cy="32" r="2.8" fill="#D63A3A"/>
-  <circle cx="38" cy="36" r="2.5" fill="#B82E2E"/>
-  <path d="M24 12 L28 12 L26 16 Z" fill="#FFD23F"/>
-  <path d="M36 30 L40 32 L35 34 Z" fill="#FFD23F"/>
+  <!-- Скальный корпус -->
+  <path d="M26 5 L40 11 L46 24 L42 38 L28 45 L12 42 L5 28 L7 14 L16 7 Z" fill="#6E7888" stroke="#5C6675" stroke-width="2"/>
+  <path d="M26 5 L40 11 L46 24 L42 38 L28 45 L12 42 L5 28 L7 14 L16 7 Z" fill="url(#mg)" opacity="0.28"/>
+  <path d="M14 18 L22 14 L28 20 L20 26 Z" fill="#4A5260" opacity="0.45"/>
+  <path d="M30 28 L38 24 L40 32 L32 36 Z" fill="#3A424E" opacity="0.4"/>
+  <!-- Связки динамита (квадратные, торчат с боков) -->
+  <g fill="#D63A3A" stroke="#8B1E1E" stroke-width="1.1">
+    <rect x="2" y="20" width="10" height="7" rx="0.6"/>
+    <rect x="40" y="18" width="10" height="7" rx="0.6"/>
+    <rect x="8" y="36" width="8" height="6" rx="0.6" transform="rotate(-22 12 39)"/>
+    <rect x="34" y="34" width="8" height="6" rx="0.6" transform="rotate(18 38 37)"/>
+    <rect x="20" y="2" width="7" height="9" rx="0.6"/>
+    <rect x="22" y="40" width="9" height="7" rx="0.6"/>
+  </g>
+  <!-- Обмотка / швы на связках -->
+  <g stroke="#5C1010" stroke-width="0.9" fill="none" opacity="0.7">
+    <line x1="4" y1="22.5" x2="10" y2="22.5"/>
+    <line x1="4" y1="24.5" x2="10" y2="24.5"/>
+    <line x1="42" y1="20.5" x2="48" y2="20.5"/>
+    <line x1="42" y1="22.5" x2="48" y2="22.5"/>
+    <line x1="21" y1="4" x2="21" y2="9"/>
+    <line x1="23" y1="4" x2="23" y2="9"/>
+  </g>
+  <!-- Фитили -->
+  <g fill="#FFD23F" stroke="#C9A820" stroke-width="0.6">
+    <rect x="6" y="14" width="2" height="4" rx="0.3"/>
+    <rect x="44" y="12" width="2" height="4" rx="0.3"/>
+    <rect x="23" y="1" width="2" height="3" rx="0.3"/>
+    <path d="M10 33 L8 31 L9 30 L11 32 Z"/>
+    <path d="M40 31 L42 29 L41 28 L39 30 Z"/>
+    <path d="M26 47 L26 49 L27.5 49 L27.5 47 Z"/>
+  </g>
   <defs>
     <linearGradient id="mg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0%" stop-color="#9CA8B8"/>

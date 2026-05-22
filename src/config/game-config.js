@@ -42,8 +42,12 @@ export const gameConfig = {
     },
     /** Радиальный взрыв мега-астероида */
     megaBurst: {
-      fragmentCount: 5,
-      bulletCount: 8,
+      largeFragmentCount: 3,
+      smallFragmentCount: 5,
+      scatterSpeed: {
+        large: { min: 115 * WORLD_SCALE, max: 185 * WORLD_SCALE },
+        small: { min: 95 * WORLD_SCALE, max: 165 * WORLD_SCALE }
+      },
       vfxBursts: 3,
       vfxBurstDelayMs: 75,
       vfxJitter: 18

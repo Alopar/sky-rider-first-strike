@@ -21,6 +21,7 @@ export function resolveEnemyType(typeId) {
 const debrisBase = {
   layer: 'debrisEnemies',
   behavior: 'debrisDrift',
+  enemyKind: 'trash',
   speedVariance: D.speedVariance,
   splitAngleRad: D.splitAngleRad
 };
@@ -128,10 +129,9 @@ export const enemiesConfig = {
     id: 'debrisMegaCharge',
     stage: 'mega',
     splitMode: 'radial',
-    splitsInto: 'debrisSmall',
     textureKey: 'enemy_debris_mega_charge',
     hp: 15,
-    score: 55,
+    score: 1,
     speed: 58 * S,
     hitboxRadius: 20 * S,
     colors: { body: '#6E7888', stroke: '#5C6675', charge: '#D63A3A', warn: '#FFD23F' }
@@ -143,7 +143,7 @@ export const enemiesConfig = {
     textureKey: 'enemy_debris_large_rock',
     splitsInto: 'debrisSmallRock',
     hp: 5,
-    score: 25,
+    score: 1,
     speed: 78 * S,
     hitboxRadius: 14 * S,
     colors: { body: '#7A8494', stroke: '#5C6675', crater: '#2E3540' }
@@ -155,7 +155,7 @@ export const enemiesConfig = {
     textureKey: 'enemy_debris_large_chunk',
     splitsInto: 'debrisSmallChunk',
     hp: 5,
-    score: 25,
+    score: 1,
     speed: 72 * S,
     hitboxRadius: 13 * S,
     colors: { body: '#6E7888', stroke: '#5C6675', crater: '#2E3540' }
@@ -167,7 +167,7 @@ export const enemiesConfig = {
     textureKey: 'enemy_debris_large_shard',
     splitsInto: 'debrisSmallShard',
     hp: 5,
-    score: 25,
+    score: 1,
     speed: 85 * S,
     hitboxRadius: 12 * S,
     colors: { body: '#848F9E', stroke: '#5C6675', crater: '#2E3540' }
@@ -178,7 +178,7 @@ export const enemiesConfig = {
     stage: 'small',
     textureKey: 'enemy_debris_small_rock',
     hp: 1,
-    score: 8,
+    score: 1,
     speed: 95 * S,
     hitboxRadius: 7 * S,
     colors: { body: '#7A8494', stroke: '#5C6675', crater: '#2E3540' }
@@ -189,7 +189,7 @@ export const enemiesConfig = {
     stage: 'small',
     textureKey: 'enemy_debris_small_chunk',
     hp: 1,
-    score: 8,
+    score: 1,
     speed: 90 * S,
     hitboxRadius: 6 * S,
     colors: { body: '#6E7888', stroke: '#5C6675', crater: '#2E3540' }
@@ -200,7 +200,7 @@ export const enemiesConfig = {
     stage: 'small',
     textureKey: 'enemy_debris_small_shard',
     hp: 1,
-    score: 8,
+    score: 1,
     speed: 100 * S,
     hitboxRadius: 6 * S,
     colors: { body: '#848F9E', stroke: '#5C6675', crater: '#2E3540' }

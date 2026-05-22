@@ -179,10 +179,20 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     return scatter?.fragment ?? 90 * S;
   }
 
-  _bulletScatterSpeed() {
-    const scatter = gameConfig.debris.scatterSpeed;
-    const over = scatter?.bulletOverFragment ?? 1.12;
-    return this._fragmentScatterSpeed() * over;
+  _spawnMegaFragments(factory, x, y, burst, waveType, count) {
+    const range = burst.scatterSpeed?.[waveType === 'debrisLarge' ? 'large' : 'small'];
+    for (let i = 0; i < count; i++) {
+      const angle = Phaser.Math.FloatBetween(0, Math.PI * 2);
+      const speed = range
+        ? Phaser.Math.FloatBetween(range.min, range.max)
+        : this._fragmentScatterSpeed();
+      factory?.spawn(waveType, x, y, {
+        velocity: {
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed
+        }
+      });
+    }
   }
 
   _dieRadialBurst() {
@@ -192,34 +202,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     EventBus.emit(EVT.ENEMY_KILLED, this.enemyConfig.score, x, y);
     DebrisDestroyVfx.playExplosive(this.scene, x, y);
 
-    const fragmentSpeed = this._fragmentScatterSpeed();
     const factory = this.scene.registry.get('enemyFactory');
-    const fragmentCount = burst.fragmentCount ?? 5;
-    const fragmentType = this.enemyConfig.splitsInto ?? 'debrisSmall';
+    const largeCount = burst.largeFragmentCount ?? 3;
+    const smallCount = burst.smallFragmentCount ?? 5;
 
-    for (let i = 0; i < fragmentCount; i++) {
-      const angle = (Math.PI * 2 / fragmentCount) * i;
-      factory?.spawn(fragmentType, x, y, {
-        velocity: {
-          vx: Math.cos(angle) * fragmentSpeed,
-          vy: Math.sin(angle) * fragmentSpeed
-        }
-      });
-    }
-
-    const bulletCount = burst.bulletCount ?? 8;
-    const bulletSpeed = this._bulletScatterSpeed();
-    for (let i = 0; i < bulletCount; i++) {
-      const angle = (Math.PI * 2 / bulletCount) * i + Math.PI / bulletCount;
-      EventBus.emit(
-        EVT.ENEMY_FIRE,
-        x,
-        y,
-        Math.cos(angle) * bulletSpeed,
-        Math.sin(angle) * bulletSpeed,
-        'round'
-      );
-    }
+    this._spawnMegaFragments(factory, x, y, burst, 'debrisLarge', largeCount);
+    this._spawnMegaFragments(factory, x, y, burst, 'debrisSmall', smallCount);
 
     this.destroy();
   }
