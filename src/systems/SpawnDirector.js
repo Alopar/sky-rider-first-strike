@@ -2,6 +2,99 @@ import { gameConfig } from '../config/game-config.js';
 import { enemiesConfig } from '../config/enemies.js';
 import { EventBus } from './EventBus.js';
 import { EVT } from './events.js';
+import { computeSpawnSlot, randomRatioInCorridor } from './spawn-patterns.js';
+
+const SPAWN_Y = -50;
+
+class ActiveWave {
+  constructor(director, wave, startElapsed) {
+    this.director = director;
+    this.wave = wave;
+    this.startElapsed = startElapsed;
+    this.mode = wave.mode ?? 'burst';
+    this.timers = [];
+    this.spawned = 0;
+    this.nextSpawnAt = 0;
+    this.done = false;
+
+    if (this.mode === 'burst') {
+      this._startBurst();
+    }
+  }
+
+  _startBurst() {
+    const interval = this.wave.interval ?? 0;
+    const count = this.wave.count ?? 1;
+    if (count <= 0) {
+      this.done = true;
+      return;
+    }
+    for (let i = 0; i < count; i++) {
+      const idx = i;
+      const evt = this.director.scene.time.delayedCall(idx * interval, () => {
+        if (this.director._shouldAbortSpawn()) {
+          this.done = true;
+          return;
+        }
+        this.director.spawnAtIndex(this.wave, idx, count);
+        this.spawned++;
+        if (this.spawned >= count) this.done = true;
+      });
+      this.timers.push(evt);
+    }
+  }
+
+  tick(elapsed) {
+    if (this.done || this.director.levelComplete) return;
+    if (this.mode !== 'stream') return;
+
+    const local = elapsed - this.startElapsed;
+    const duration = this.wave.duration ?? 0;
+    const interval = this.wave.interval ?? 600;
+    const maxCount = this.wave.count;
+
+    if (duration > 0 && local >= duration) {
+      this.done = true;
+      return;
+    }
+
+    while (local >= this.nextSpawnAt) {
+      if (this.director._shouldAbortSpawn()) {
+        this.done = true;
+        return;
+      }
+      if (maxCount != null && this.spawned >= maxCount) {
+        this.done = true;
+        return;
+      }
+      if (duration > 0 && this.nextSpawnAt >= duration) {
+        this.done = true;
+        return;
+      }
+
+      this.director.spawnStreamOne(this.wave, this.spawned);
+      this.spawned++;
+      this.nextSpawnAt += interval;
+
+      if (maxCount != null && this.spawned >= maxCount) {
+        this.done = true;
+        return;
+      }
+    }
+  }
+
+  cancel() {
+    for (const t of this.timers) {
+      if (t?.remove) t.remove(false);
+    }
+    this.timers = [];
+    this.done = true;
+  }
+
+  isDone() {
+    return this.done;
+  }
+}
 
 export class SpawnDirector {
   constructor(scene, enemyFactory, levelConfig) {
@@ -11,12 +104,14 @@ export class SpawnDirector {
     this.waveIndex = 0;
     this.startTime = -1;
     this.levelComplete = false;
+    this.activeWaves = [];
   }
 
   start(time) {
     this.startTime = time;
     this.waveIndex = 0;
     this.levelComplete = false;
+    this._stopAllWaves();
   }
 
   getElapsed(time) {
@@ -27,6 +122,15 @@ export class SpawnDirector {
   getRemainingMs(time) {
     const duration = this.config.duration ?? 0;
     return Math.max(0, duration - this.getElapsed(time));
+  }
+
+  _shouldAbortSpawn() {
+    return this.levelComplete || !this.scene.sys.isActive();
+  }
+
+  _stopAllWaves() {
+    for (const w of this.activeWaves) w.cancel();
+    this.activeWaves = [];
   }
 
   _getSpawnRatioBounds(typeId) {
@@ -62,31 +166,61 @@ export class SpawnDirector {
     return Phaser.Math.Clamp(r, 0.02, 0.98);
   }
 
-  /**
-   * X в пикселях: legacy `x`, либо `xRatio` (одна точка), либо линейный разброс между xRatioFrom и xRatioTo.
-   */
-  resolveSpawnX(wave, index, count) {
-    const w = this.scene.game.config.width;
-    const bounds = this._getSpawnRatioBounds(wave.type);
-    const clampR = (r) => this._clampSpawnRatio(r, bounds);
+  _ratioToPixelX(ratioX, typeId) {
+    const bounds = this._getSpawnRatioBounds(typeId);
+    const r = this._clampSpawnRatio(ratioX, bounds);
+    return r * this.scene.game.config.width;
+  }
 
-    if (typeof wave.x === 'number' && wave.xRatio == null && wave.xRatioFrom == null && wave.xRatioTo == null) {
-      return wave.x;
+  /** Legacy: абсолютный x без паттерна */
+  _usesLegacyX(wave) {
+    return (
+      typeof wave.x === 'number' &&
+      wave.xRatio == null &&
+      wave.xRatioFrom == null &&
+      wave.xRatioTo == null
+    );
+  }
+
+  spawnAtIndex(wave, index, count) {
+    if (this._shouldAbortSpawn()) return;
+
+    let x;
+    let y = SPAWN_Y;
+
+    if (this._usesLegacyX(wave)) {
+      x = wave.x;
+    } else {
+      const slot = computeSpawnSlot(wave, index, count);
+      const ratioX = wave.xRandom ? randomRatioInCorridor(wave) : slot.ratioX;
+      x = this._ratioToPixelX(ratioX, wave.type);
+      y = SPAWN_Y + (slot.yOffset ?? 0);
     }
 
-    if (count <= 1) {
-      if (wave.xRatio != null) {
-        return clampR(wave.xRatio) * w;
+    this.factory.spawn(wave.type, x, y);
+  }
+
+  spawnStreamOne(wave, index) {
+    if (this._shouldAbortSpawn()) return;
+
+    let x;
+    let y = SPAWN_Y;
+
+    if (this._usesLegacyX(wave)) {
+      x = wave.x;
+    } else {
+      let ratioX;
+      if (wave.xRandom) {
+        ratioX = randomRatioInCorridor(wave);
+      } else {
+        const slot = computeSpawnSlot(wave, index, Math.max(1, wave.count ?? 1));
+        ratioX = slot.ratioX;
+        y = SPAWN_Y + (slot.yOffset ?? 0);
       }
-      const from = wave.xRatioFrom ?? 0.5;
-      const to = wave.xRatioTo ?? from;
-      return clampR((from + to) / 2) * w;
+      x = this._ratioToPixelX(ratioX, wave.type);
     }
 
-    const from = wave.xRatioFrom ?? wave.xRatio ?? 0.08;
-    const to = wave.xRatioTo ?? wave.xRatio ?? 0.92;
-    const t = count > 1 ? index / (count - 1) : 0;
-    return clampR(from + t * (to - from)) * w;
+    this.factory.spawn(wave.type, x, y);
   }
 
   update(time) {
@@ -98,6 +232,7 @@ export class SpawnDirector {
     if (duration != null && elapsed >= duration) {
       if (!this.levelComplete) {
         this.levelComplete = true;
+        this._stopAllWaves();
         EventBus.emit(EVT.LEVEL_COMPLETE);
       }
       return;
@@ -106,12 +241,21 @@ export class SpawnDirector {
     while (this.waveIndex < this.config.waves.length) {
       const wave = this.config.waves[this.waveIndex];
       if (elapsed >= wave.time) {
-        this.spawnWave(wave);
+        this.activeWaves.push(new ActiveWave(this, wave, elapsed));
         this.waveIndex++;
       } else {
         break;
       }
     }
+
+    this.activeWaves = this.activeWaves.filter((w) => {
+      w.tick(elapsed);
+      if (w.isDone()) {
+        w.cancel();
+        return false;
+      }
+      return true;
+    });
 
     if (
       this.waveIndex >= this.config.waves.length &&
@@ -120,19 +264,6 @@ export class SpawnDirector {
     ) {
       this.startTime = time;
       this.waveIndex = 0;
-    }
-  }
-
-  spawnWave(wave) {
-    const interval = wave.interval ?? 0;
-    const count = wave.count;
-    for (let i = 0; i < count; i++) {
-      const idx = i;
-      this.scene.time.delayedCall(idx * interval, () => {
-        if (!this.scene.sys.isActive() || this.levelComplete) return;
-        const x = this.resolveSpawnX(wave, idx, count);
-        this.factory.spawn(wave.type, x, -50);
-      });
     }
   }
 }
