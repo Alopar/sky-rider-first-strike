@@ -4,6 +4,7 @@ import { GameScene } from './scenes/GameScene.js';
 import { gameConfig } from './config/game-config.js';
 import { UIOverlay } from './ui/UIOverlay.js';
 import { EndGameFeedbackScreen } from './ui/EndGameFeedbackScreen.js';
+import { MainMenuScreen } from './ui/MainMenuScreen.js';
 
 const W = gameConfig.width;
 const H = gameConfig.height;
@@ -63,6 +64,11 @@ uiContainer.style.zIndex = '2';
 uiContainer.style.pointerEvents = 'none';
 uiContainer.style.boxSizing = 'border-box';
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
 new UIOverlay('ui-layer');
 new EndGameFeedbackScreen('ui-layer');
+
+const mainMenu = new MainMenuScreen('ui-layer', () => {
+  game.scene.start('GameScene');
+});
+mainMenu.show();

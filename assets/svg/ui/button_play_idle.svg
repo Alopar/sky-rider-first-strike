@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 64" width="480" height="64">
+  <defs>
+    <path id="btnShape" d="M 14 12 L 26 0 H 454 L 466 12 V 52 L 454 64 H 26 L 14 52 Z"/>
+
+    <linearGradient id="btnIdleFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#12294F" stop-opacity="0.72"/>
+      <stop offset="54%" stop-color="#07162F" stop-opacity="0.58"/>
+      <stop offset="100%" stop-color="#031026" stop-opacity="0.72"/>
+    </linearGradient>
+
+    <linearGradient id="btnIdleStroke" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4169A9" stop-opacity="0.52"/>
+      <stop offset="50%" stop-color="#6B95D9" stop-opacity="0.82"/>
+      <stop offset="100%" stop-color="#4169A9" stop-opacity="0.52"/>
+    </linearGradient>
+
+    <linearGradient id="btnSheen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#83B6FF" stop-opacity="0"/>
+      <stop offset="48%" stop-color="#83B6FF" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#83B6FF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <use href="#btnShape" fill="#020814" opacity="0.46" transform="translate(0 2)"/>
+  <use href="#btnShape" fill="url(#btnIdleFill)" stroke="url(#btnIdleStroke)" stroke-width="1.8"/>
+
+  <path d="M 28 7 H 452" stroke="url(#btnSheen)" stroke-width="1"/>
+  <path d="M 28 57 H 452" stroke="#224A86" stroke-width="1" stroke-opacity="0.42"/>
+  <path d="M 14 18 H 4 M 466 18 H 476 M 14 46 H 4 M 466 46 H 476" stroke="#355E9F" stroke-width="1.5" stroke-opacity="0.42"/>
+
+  <g fill="none" stroke="#739CE0" stroke-width="2.4" stroke-linecap="square" stroke-linejoin="miter" opacity="0.9">
+    <path d="M 166 18 V 47 M 166 18 H 197 L 203 24 V 31 L 197 37 H 166"/>
+    <path d="M 217 18 V 47 H 245"/>
+    <path d="M 260 47 L 276 18 L 292 47 M 266 37 H 286"/>
+    <path d="M 307 18 L 323 36 L 339 18 M 323 36 V 47"/>
+  </g>
+</svg>

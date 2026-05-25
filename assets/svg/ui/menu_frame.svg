@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" width="1920" height="1080">
+  <defs>
+    <linearGradient id="frameStroke" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#5D83C9"/>
+      <stop offset="48%" stop-color="#2D4D89"/>
+      <stop offset="100%" stop-color="#6E9BE3"/>
+    </linearGradient>
+
+    <linearGradient id="panelFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#112448" stop-opacity="0.34"/>
+      <stop offset="100%" stop-color="#051127" stop-opacity="0.12"/>
+    </linearGradient>
+
+    <filter id="frameGlow" x="-3%" y="-5%" width="106%" height="110%">
+      <feGaussianBlur stdDeviation="2.6" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="
+        0 0 0 0 0.24
+        0 0 0 0 0.48
+        0 0 0 0 1
+        0 0 0 0.55 0" result="blueBlur"/>
+      <feMerge>
+        <feMergeNode in="blueBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g stroke-linejoin="miter" stroke-linecap="square">
+    <path d="
+      M 82 46 L 382 46 L 404 62 L 760 62 L 794 96
+      L 1126 96 L 1160 62 L 1516 62 L 1538 46 L 1838 46 L 1876 84
+      L 1876 290 L 1848 318 L 1848 540 L 1872 564 L 1872 728 L 1848 752
+      L 1848 962 L 1876 990 L 1876 1036 L 1838 1074 L 1538 1074 L 1516 1058
+      L 1160 1058 L 1126 1024 L 794 1024 L 760 1058 L 404 1058 L 382 1074
+      L 82 1074 L 44 1036 L 44 990 L 72 962 L 72 752 L 48 728 L 48 564
+      L 72 540 L 72 318 L 44 290 L 44 84 Z
+    " fill="url(#panelFill)" stroke="#142C58" stroke-width="9" stroke-opacity="0.22"/>
+
+    <path d="
+      M 82 46 L 382 46 L 404 62 L 760 62 L 794 96
+      L 1126 96 L 1160 62 L 1516 62 L 1538 46 L 1838 46 L 1876 84
+      L 1876 290 L 1848 318 L 1848 540 L 1872 564 L 1872 728 L 1848 752
+      L 1848 962 L 1876 990 L 1876 1036 L 1838 1074 L 1538 1074 L 1516 1058
+      L 1160 1058 L 1126 1024 L 794 1024 L 760 1058 L 404 1058 L 382 1074
+      L 82 1074 L 44 1036 L 44 990 L 72 962 L 72 752 L 48 728 L 48 564
+      L 72 540 L 72 318 L 44 290 L 44 84 Z
+    " fill="none" stroke="url(#frameStroke)" stroke-width="2.5" filter="url(#frameGlow)"/>
+
+    <path d="
+      M 108 74 H 378 L 398 90 H 748 L 780 122 H 1140 L 1172 90 H 1522 L 1542 74 H 1812
+      M 108 1006 H 378 L 398 990 H 748 L 780 958 H 1140 L 1172 990 H 1522 L 1542 1006 H 1812
+    " fill="none" stroke="#315895" stroke-width="1.5" stroke-opacity="0.64"/>
+
+    <g fill="none" stroke="#5F8FDF" stroke-opacity="0.72" stroke-width="2">
+      <path d="M 792 96 L 816 116 H 1104 L 1128 96"/>
+      <path d="M 792 1024 L 816 1004 H 1104 L 1128 1024"/>
+      <path d="M 70 318 H 92 V 540 H 70"/>
+      <path d="M 1850 318 H 1828 V 540 H 1850"/>
+      <path d="M 70 752 H 92 V 962 H 70"/>
+      <path d="M 1850 752 H 1828 V 962 H 1850"/>
+    </g>
+
+    <g fill="none" stroke="#6FA3F7" stroke-width="3" stroke-opacity="0.5">
+      <path d="M 86 50 H 164"/>
+      <path d="M 1756 50 H 1834"/>
+      <path d="M 86 1070 H 164"/>
+      <path d="M 1756 1070 H 1834"/>
+    </g>
+
+    <g stroke="#517BC1" stroke-width="3" stroke-opacity="0.72">
+      <path d="M 888 80 L 898 68"/>
+      <path d="M 916 80 L 926 68"/>
+      <path d="M 944 80 L 954 68"/>
+      <path d="M 972 80 L 982 68"/>
+      <path d="M 1000 80 L 1010 68"/>
+      <path d="M 1028 80 L 1038 68"/>
+
+      <path d="M 888 1000 L 898 1012"/>
+      <path d="M 916 1000 L 926 1012"/>
+      <path d="M 944 1000 L 954 1012"/>
+      <path d="M 972 1000 L 982 1012"/>
+      <path d="M 1000 1000 L 1010 1012"/>
+      <path d="M 1028 1000 L 1038 1012"/>
+    </g>
+
+    <g fill="#5F8FDF" opacity="0.78">
+      <rect x="70" y="502" width="7" height="7"/>
+      <rect x="70" y="522" width="7" height="7"/>
+      <rect x="70" y="542" width="7" height="7"/>
+      <rect x="70" y="562" width="7" height="7"/>
+      <path d="M 78 596 L 60 608 L 78 620 Z"/>
+
+      <rect x="1843" y="502" width="7" height="7"/>
+      <rect x="1843" y="522" width="7" height="7"/>
+      <rect x="1843" y="542" width="7" height="7"/>
+      <rect x="1843" y="562" width="7" height="7"/>
+      <path d="M 1842 596 L 1860 608 L 1842 620 Z"/>
+    </g>
+  </g>
+</svg>

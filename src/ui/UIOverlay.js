@@ -115,6 +115,7 @@ export class UIOverlay {
 
     this._lastHp = MAX_LIVES;
     this.renderWeaponLevel(1);
+    this.hudElement.style.display = 'none';
   }
 
   renderWeaponLevel(level) {

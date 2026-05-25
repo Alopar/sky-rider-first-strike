@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 64" width="480" height="64">
+  <defs>
+    <path id="btnShapeFocus" d="M 14 12 L 26 0 H 454 L 466 12 V 52 L 454 64 H 26 L 14 52 Z"/>
+
+    <linearGradient id="btnFocusFill" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#16366B" stop-opacity="0.88"/>
+      <stop offset="50%" stop-color="#08214A" stop-opacity="0.76"/>
+      <stop offset="100%" stop-color="#05142E" stop-opacity="0.92"/>
+    </linearGradient>
+
+    <linearGradient id="btnFocusStroke" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4FAFFF" stop-opacity="0.55"/>
+      <stop offset="50%" stop-color="#8BD4FF"/>
+      <stop offset="100%" stop-color="#4FAFFF" stop-opacity="0.55"/>
+    </linearGradient>
+
+    <linearGradient id="btnFocusSheen" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7AD7FF" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#7AD7FF" stop-opacity="0.48"/>
+      <stop offset="100%" stop-color="#7AD7FF" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="btnGlow" x="-16%" y="-72%" width="132%" height="244%">
+      <feGaussianBlur stdDeviation="3.4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="
+        0 0 0 0 0.22
+        0 0 0 0 0.64
+        0 0 0 0 1
+        0 0 0 0.72 0" result="blueBlur"/>
+      <feMerge>
+        <feMergeNode in="blueBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <g fill="none" stroke="#4FB6FF" stroke-width="2.2" stroke-opacity="0.76">
+    <path d="M 0 19 V 45"/>
+    <path d="M 480 19 V 45"/>
+    <path d="M 7 16 H 16 M 7 48 H 16"/>
+    <path d="M 473 16 H 464 M 473 48 H 464"/>
+  </g>
+
+  <use href="#btnShapeFocus" fill="#041028" opacity="0.56" transform="translate(0 2)"/>
+  <use href="#btnShapeFocus" fill="url(#btnFocusFill)" stroke="url(#btnFocusStroke)" stroke-width="2.2" filter="url(#btnGlow)"/>
+
+  <path d="M 30 7 H 450" stroke="url(#btnFocusSheen)" stroke-width="1.6"/>
+  <path d="M 30 57 H 450" stroke="#58B9FF" stroke-width="1.2" stroke-opacity="0.42"/>
+  <path d="M 28 32 H 74 M 406 32 H 452" stroke="#4FB6FF" stroke-width="1.2" stroke-opacity="0.34"/>
+
+  <g fill="none" stroke="#C9F0FF" stroke-width="2.7" stroke-linecap="square" stroke-linejoin="miter">
+    <path d="M 166 18 V 47 M 166 18 H 197 L 203 24 V 31 L 197 37 H 166"/>
+    <path d="M 217 18 V 47 H 245"/>
+    <path d="M 260 47 L 276 18 L 292 47 M 266 37 H 286"/>
+    <path d="M 307 18 L 323 36 L 339 18 M 323 36 V 47"/>
+  </g>
+</svg>

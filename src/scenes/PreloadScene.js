@@ -11,7 +11,6 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    // Start game
-    this.scene.start('GameScene');
+    // Game starts from main menu (MainMenuScreen)
   }
 }
