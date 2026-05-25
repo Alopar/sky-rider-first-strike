@@ -91,7 +91,7 @@ const PATTERN_FNS = {
  * @param {number} count — размер пачки (для burst) или 1 для stream
  * @returns {{ ratioX: number, yOffset: number }}
  */
-const HEAVY_CHAIN_TYPES = new Set(['bastion', 'dreadnought']);
+const HEAVY_CHAIN_TYPES = new Set(['bastion', 'dreadnought', 'miniBoss']);
 
 export function computeSpawnSlot(wave, index, count) {
   let pattern = wave.pattern ?? 'line';

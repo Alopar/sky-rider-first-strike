@@ -124,6 +124,7 @@ export const level01 = {
     { time: 174500, type: 'debrisMega', count: 2, interval: 900, xRandom: true, xRatioFrom: 0.15, xRatioTo: 0.85 },
     { time: 175500, type: 'debrisLarge', count: 8, interval: 200, xRandom: true, xRatioFrom: 0.02, xRatioTo: 0.98 },
     { time: 176000, type: 'orb', count: 12, interval: 120, pattern: 'zigzag', xRatioFrom: 0.02, xRatioTo: 0.98 },
+    { time: 180000, type: 'miniBoss', count: 1, xRatio: 0.5 },
     {
       time: 180000,
       mode: 'stream',

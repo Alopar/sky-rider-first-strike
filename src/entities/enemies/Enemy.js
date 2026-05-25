@@ -61,6 +61,11 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this._applyFlightSpin();
 
     const { behavior } = this.enemyConfig;
+    if (behavior === 'miniBossPatrol') {
+      this._bossPhase = 'enter';
+      this._bossPatrolStartTime = 0;
+      this._patrolDir = Phaser.Math.Between(0, 1) === 0 ? -1 : 1;
+    }
     if (options.velocity) {
       this.setVelocity(options.velocity.vx, options.velocity.vy);
     } else if (behavior === 'debrisDrift') {
@@ -99,6 +104,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   _applySpawnRotation() {
     if (this.enemyConfig.behavior === 'debrisDrift') {
       this.setRotation(Phaser.Math.FloatBetween(0, Math.PI * 2));
+    } else if (this.enemyConfig.behavior === 'miniBossPatrol') {
+      this.setRotation(0);
     } else if (this.enemyConfig.rotateInFlight || this.enemyConfig.facingDown) {
       this.setRotation(Math.PI);
     } else {
@@ -274,6 +281,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     } else if (behavior === 'straightDown' || behavior === 'striker') {
       this.setVelocityY(speed);
       this.setVelocityX(0);
+    } else if (behavior === 'miniBossPatrol') {
+      this._updateMiniBossPatrol(time, dtMs);
     }
     // debrisDrift: скорость задаётся при спавне, не перезаписываем
     if (behavior === 'debrisDrift' && this._debrisSpin) {
@@ -290,6 +299,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.lastFired = time;
         if (this.enemyConfig.fireMode === 'burstForward') {
           this._fireBurstForward();
+        } else if (this.enemyConfig.fireMode === 'chaoticQuad') {
+          this._fireChaoticQuad();
         } else {
           this.fireBullet();
         }
@@ -305,6 +316,79 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
       }
     } else if (this.y > h + 120) {
       this.destroy();
+    }
+  }
+
+  _updateMiniBossPatrol(time, _dtMs) {
+    const cfg = this.enemyConfig;
+    const h = this.scene.game.config.height;
+    const w = this.scene.game.config.width;
+    const anchorY = h * (cfg.patrolAnchorYRatio ?? 0.14);
+    const margin = w * (cfg.patrolMarginRatio ?? 0.06);
+    const patrolVx = cfg.patrolSpeedX ?? 38 * S;
+
+    if (this._bossPhase === 'enter') {
+      const enterSpeed = cfg.enterSpeed ?? cfg.speed;
+      this.setVelocity(0, enterSpeed);
+      if (this.y >= anchorY) {
+        this.y = anchorY;
+        this._bossPhase = 'patrol';
+        this._bossPatrolStartTime = time;
+      }
+      return;
+    }
+
+    if (this._bossPhase === 'patrol') {
+      if (!this._bossPatrolStartTime) {
+        this._bossPatrolStartTime = time;
+      }
+
+      let vx = this._patrolDir * patrolVx;
+      if (this.x <= margin) {
+        this._patrolDir = 1;
+        vx = patrolVx;
+      } else if (this.x >= w - margin) {
+        this._patrolDir = -1;
+        vx = -patrolVx;
+      }
+      this.setVelocity(vx, 0);
+
+      const hangMs = cfg.hangDurationMs ?? 30000;
+      if (time - this._bossPatrolStartTime >= hangMs) {
+        this._bossPhase = 'retreat';
+      }
+      return;
+    }
+
+    if (this._bossPhase === 'retreat') {
+      const retreatSpeed = cfg.retreatSpeed ?? cfg.speed;
+      this.setVelocity(0, retreatSpeed);
+    }
+  }
+
+  _fireChaoticQuad() {
+    const cfg = this.enemyConfig;
+    const points = cfg.firePoints;
+    if (!points?.length) return;
+
+    const speed = cfg.bulletSpeed;
+    const spread = cfg.chaoticSpreadRad ?? 0.5;
+    const style = cfg.bulletStyle ?? 'laser';
+    const down = Math.PI / 2;
+    const shots = Phaser.Math.Between(1, Math.min(3, points.length));
+    const indices = Phaser.Utils.Array.Shuffle([...points.keys()]).slice(0, shots);
+
+    for (const i of indices) {
+      const pt = points[i];
+      const angle = down + Phaser.Math.FloatBetween(-spread, spread);
+      EventBus.emit(
+        EVT.ENEMY_FIRE,
+        this.x + pt.x,
+        this.y + pt.y,
+        Math.cos(angle) * speed,
+        Math.sin(angle) * speed,
+        style
+      );
     }
   }
 

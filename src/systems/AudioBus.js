@@ -5,7 +5,8 @@ import { EVT } from './events.js';
 
 const SHIP_HP_VOLUME = {
   dreadnought: 1.15,
-  bastion: 1.05
+  bastion: 1.05,
+  miniBoss: 1.2
 };
 
 export class AudioBus {

@@ -71,6 +71,35 @@ export const enemiesConfig = {
     fireOffsetY: 10,
     colors: { body: '#8B2222', stroke: '#FF6B6B' }
   },
+  miniBoss: {
+    id: 'miniBoss',
+    spawnZone: 'main',
+    textureKey: 'enemy_mini_boss',
+    hp: 36,
+    score: 360,
+    speed: 42 * S,
+    layer: 'fgEnemies',
+    behavior: 'miniBossPatrol',
+    hitboxRect: { w: 84 * S, h: 28 * S },
+    enterSpeed: 55 * S,
+    retreatSpeed: 52 * S,
+    patrolAnchorYRatio: 0.14,
+    patrolSpeedX: 38 * S,
+    patrolMarginRatio: 0.06,
+    hangDurationMs: 30000,
+    fireRate: 3100,
+    fireMode: 'chaoticQuad',
+    bulletStyle: 'laser',
+    bulletSpeed: 240 * S,
+    chaoticSpreadRad: 0.55,
+    firePoints: [
+      { x: -32 * S, y: 10 * S },
+      { x: -11 * S, y: 12 * S },
+      { x: 11 * S, y: 12 * S },
+      { x: 32 * S, y: 10 * S }
+    ],
+    colors: { body: '#6A1818', stroke: '#FF6B6B' }
+  },
   dreadnought: {
     id: 'dreadnought',
     spawnZone: 'main',
