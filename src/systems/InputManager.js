@@ -1,3 +1,18 @@
+const GAME_CAPTURE_KEY_CODES = [
+  Phaser.Input.Keyboard.KeyCodes.UP,
+  Phaser.Input.Keyboard.KeyCodes.DOWN,
+  Phaser.Input.Keyboard.KeyCodes.LEFT,
+  Phaser.Input.Keyboard.KeyCodes.RIGHT,
+  Phaser.Input.Keyboard.KeyCodes.W,
+  Phaser.Input.Keyboard.KeyCodes.A,
+  Phaser.Input.Keyboard.KeyCodes.S,
+  Phaser.Input.Keyboard.KeyCodes.D,
+  Phaser.Input.Keyboard.KeyCodes.SPACE,
+  Phaser.Input.Keyboard.KeyCodes.J,
+  Phaser.Input.Keyboard.KeyCodes.ESC,
+  Phaser.Input.Keyboard.KeyCodes.P
+];
+
 export class InputManager {
   constructor(scene) {
     this.scene = scene;
@@ -16,6 +31,23 @@ export class InputManager {
       esc: kb.addKey(Phaser.Input.Keyboard.KeyCodes.ESC),
       p: kb.addKey(Phaser.Input.Keyboard.KeyCodes.P)
     };
+  }
+
+  /** Отключить перехват клавиш (экран feedback, пауза и т.п.) */
+  setEnabled(enabled) {
+    const kb = this.scene.input?.keyboard;
+    if (!kb) return;
+
+    kb.enabled = enabled;
+
+    if (enabled) {
+      kb.addCapture(GAME_CAPTURE_KEY_CODES);
+      this.scene.game.canvas?.focus();
+    } else {
+      kb.resetKeys();
+      kb.clearCaptures();
+      this.scene.game.canvas?.blur();
+    }
   }
 
   isLeft() { return this.keys.left.isDown || this.keys.a.isDown; }

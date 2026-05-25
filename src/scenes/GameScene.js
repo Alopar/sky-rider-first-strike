@@ -64,6 +64,8 @@ export class GameScene extends Phaser.Scene {
       this.physics.resume();
     }
 
+    this.inputManager.setEnabled(true);
+
     EventBus.emit(EVT.GAME_START);
     EventBus.on(EVT.PLAYER_DEAD, this.onPlayerDead, this);
     EventBus.on(EVT.LEVEL_COMPLETE, this.onLevelComplete, this);
@@ -161,6 +163,7 @@ export class GameScene extends Phaser.Scene {
 
     this.spawnDirector._stopAllWaves();
     this.physics.pause();
+    this.inputManager?.setEnabled(false);
     this.scene.pause('GameScene');
 
     EventBus.emit(EVT.RUN_ENDED, this.buildRunEndedPayload(outcome));

@@ -169,6 +169,10 @@ export class EndGameFeedbackScreen {
 
     this.root.classList.add('feedback-screen--visible');
     this.root.setAttribute('aria-hidden', 'false');
+
+    requestAnimationFrame(() => {
+      this.commentInput?.focus();
+    });
   }
 
   hide() {
