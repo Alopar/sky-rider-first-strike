@@ -1,6 +1,6 @@
 import { MUTATION_REVISION } from './level-mutations.js';
 
-export const FEEDBACK_SCHEMA_VERSION = '1.0';
+export const FEEDBACK_SCHEMA_VERSION = '1.1';
 
 export const FEEDBACK_SCALES = [
   {
@@ -27,6 +27,21 @@ export const FEEDBACK_SCALES = [
     key: 'readability',
     label: 'Читаемость',
     hint: '0 — трудно читать поле, 1 — угрозы видны'
+  },
+  {
+    key: 'bulletPressure',
+    label: 'Пули врагов',
+    hint: '0 — мало опасных выстрелов, 1 — давление от пуль в норме'
+  },
+  {
+    key: 'weaponProgression',
+    label: 'Прокачка оружия',
+    hint: '0 — темп или ощущение силы не те, 1 — рост оружия понятен и устраивает'
+  },
+  {
+    key: 'heavyEnemyDurability',
+    label: 'Крупные враги',
+    hint: '0 — dreadnought и крупный мусор слишком хрупкие, 1 — держат удар как надо'
   }
 ];
 
