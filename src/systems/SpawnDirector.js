@@ -102,26 +102,26 @@ export class SpawnDirector {
     this.factory = enemyFactory;
     this.config = levelConfig;
     this.waveIndex = 0;
-    this.startTime = -1;
+    this.running = false;
     this.levelComplete = false;
     this.activeWaves = [];
   }
 
-  start(time) {
-    this.startTime = time;
+  reset() {
+    this._stopAllWaves();
     this.waveIndex = 0;
     this.levelComplete = false;
-    this._stopAllWaves();
+    this.running = false;
   }
 
-  getElapsed(time) {
-    if (this.startTime === -1) return 0;
-    return time - this.startTime;
+  start() {
+    this.reset();
+    this.running = true;
   }
 
-  getRemainingMs(time) {
+  getRemainingMs(elapsedMs) {
     const duration = this.config.duration ?? 0;
-    return Math.max(0, duration - this.getElapsed(time));
+    return Math.max(0, duration - elapsedMs);
   }
 
   _shouldAbortSpawn() {
@@ -223,10 +223,10 @@ export class SpawnDirector {
     this.factory.spawn(wave.type, x, y);
   }
 
-  update(time) {
-    if (this.startTime === -1) return;
+  update(elapsedMs) {
+    if (!this.running) return;
 
-    const elapsed = this.getElapsed(time);
+    const elapsed = elapsedMs;
     const duration = this.config.duration;
 
     if (duration != null && elapsed >= duration) {
@@ -262,7 +262,6 @@ export class SpawnDirector {
       this.config.loop &&
       this.config.waves.length > 0
     ) {
-      this.startTime = time;
       this.waveIndex = 0;
     }
   }

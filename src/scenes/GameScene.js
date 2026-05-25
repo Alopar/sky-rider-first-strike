@@ -48,29 +48,38 @@ export class GameScene extends Phaser.Scene {
     this.audioBus = new AudioBus(this);
     this.audioBus.init();
 
-    this.spawnDirector.start(this.time.now);
+    this._runElapsedMs = 0;
+    this.spawnDirector.start();
     this._levelCleared = false;
+    this._runEnded = false;
     this._lastTimerSecond = -1;
+
+    if (this.scene.isPaused('GameScene')) {
+      this.scene.resume('GameScene');
+    }
+    if (this.physics?.world) {
+      this.physics.resume();
+    }
 
     EventBus.emit(EVT.GAME_START);
     EventBus.on(EVT.PLAYER_DEAD, this.onPlayerDead, this);
     EventBus.on(EVT.LEVEL_COMPLETE, this.onLevelComplete, this);
+    EventBus.on(EVT.FEEDBACK_RETRY, this.onFeedbackRetry, this);
 
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, this.onSceneShutdown, this);
   }
 
   onSceneShutdown() {
+    this.time?.removeAllEvents();
+    this.spawnDirector?.reset();
     this.registry.remove('playerRef');
     this.registry.remove('weaponSystem');
     this.registry.remove('sideTurretBonus');
     this.registry.remove('orbitalSphereBonus');
     this.registry.remove('enemyFactory');
-    if (this._restartTimer) {
-      this._restartTimer.remove(false);
-      this._restartTimer = undefined;
-    }
     EventBus.off(EVT.PLAYER_DEAD, this.onPlayerDead, this);
     EventBus.off(EVT.LEVEL_COMPLETE, this.onLevelComplete, this);
+    EventBus.off(EVT.FEEDBACK_RETRY, this.onFeedbackRetry, this);
     this.weaponSystem?.destroy();
     this.scoreSystem?.destroy();
     this.bonusDropSystem?.destroy();
@@ -81,6 +90,10 @@ export class GameScene extends Phaser.Scene {
   }
 
   update(time, delta) {
+    if (this._runEnded) return;
+
+    this._runElapsedMs += delta;
+
     if (this.inputManager.isPausePressed()) {
       // Pause not fully implemented yet
     }
@@ -96,8 +109,10 @@ export class GameScene extends Phaser.Scene {
       this.orbitalSphereBonus.update(time, this.player, delta);
     }
 
-    this.spawnDirector.update(time);
-    this.updateLevelTimer(time);
+    this.spawnDirector.update(this._runElapsedMs);
+    if (this._runEnded) return;
+
+    this.updateLevelTimer();
 
     // Update bullets
     this.layerManager.getGroup('playerBullets').getChildren().forEach(b => b.update());
@@ -110,10 +125,10 @@ export class GameScene extends Phaser.Scene {
     this.layerManager.getGroup('powerUps').getChildren().forEach(pu => pu.update(delta));
   }
 
-  updateLevelTimer(time) {
-    if (this._levelCleared || this.spawnDirector.startTime === -1) return;
+  updateLevelTimer() {
+    if (this._levelCleared || !this.spawnDirector.running) return;
 
-    const elapsedMs = this.spawnDirector.getElapsed(time);
+    const elapsedMs = this._runElapsedMs;
     const sec = Math.floor(elapsedMs / 1000);
     if (sec !== this._lastTimerSecond) {
       this._lastTimerSecond = sec;
@@ -121,23 +136,58 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  buildRunEndedPayload(outcome) {
+    const elapsedMs =
+      outcome === 'win' ? level01.duration : this._runElapsedMs;
+
+    return {
+      outcome,
+      levelId: level01.id,
+      score: this.scoreSystem.score,
+      elapsedMs,
+      hpRemaining: this.player?.hp ?? 0,
+      weaponLevel: this.weaponSystem.getLevel()
+    };
+  }
+
+  endRun(outcome) {
+    if (this._runEnded) return;
+    this._runEnded = true;
+    if (outcome === 'win') {
+      this._levelCleared = true;
+      EventBus.emit(EVT.LEVEL_TIME_CHANGED, level01.duration);
+    }
+
+    this.spawnDirector._stopAllWaves();
+    this.physics.pause();
+    this.scene.pause('GameScene');
+
+    EventBus.emit(EVT.RUN_ENDED, this.buildRunEndedPayload(outcome));
+  }
+
   onLevelComplete() {
-    if (this._levelCleared) return;
-    this._levelCleared = true;
-    EventBus.emit(EVT.LEVEL_TIME_CHANGED, level01.duration);
+    if (this._levelCleared || this._runEnded) return;
+    this.endRun('win');
   }
 
   onPlayerDead() {
-    if (this._levelCleared) return;
-    EventBus.emit(EVT.GAME_OVER);
-    if (this._restartTimer) {
-      this._restartTimer.remove(false);
+    if (this._levelCleared || this._runEnded) return;
+    this.endRun('lose');
+  }
+
+  clearBattlefield() {
+    if (!this.layerManager?.groups) return;
+    for (const group of Object.values(this.layerManager.groups)) {
+      group.clear(true, true);
     }
-    this._restartTimer = this.time.delayedCall(2000, () => {
-      this._restartTimer = undefined;
-      this.scoreSystem.reset();
-      this.bonusDropSystem.reset();
-      this.scene.restart();
-    });
+  }
+
+  onFeedbackRetry() {
+    this.time.removeAllEvents();
+    this.spawnDirector?.reset();
+    this.clearBattlefield();
+    this.scoreSystem.reset();
+    this.bonusDropSystem.reset();
+    this.scene.restart();
   }
 }

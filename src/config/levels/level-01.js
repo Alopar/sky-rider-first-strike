@@ -1,5 +1,6 @@
 /** Уровень 1: 5 мин, паттерны спавна, stream-слои, наложение волн */
 export const level01 = {
+  id: 'level-01',
   duration: 300000,
   loop: false,
   waves: [

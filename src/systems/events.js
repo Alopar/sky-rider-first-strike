@@ -14,5 +14,7 @@ export const EVT = {
   GAME_OVER: 'game:over',
   GAME_START: 'game:start',
   LEVEL_COMPLETE: 'level:complete',
-  LEVEL_TIME_CHANGED: 'level:time-changed'
+  LEVEL_TIME_CHANGED: 'level:time-changed',
+  RUN_ENDED: 'run:ended',
+  FEEDBACK_RETRY: 'feedback:retry'
 };

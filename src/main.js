@@ -3,6 +3,7 @@ import { PreloadScene } from './scenes/PreloadScene.js';
 import { GameScene } from './scenes/GameScene.js';
 import { gameConfig } from './config/game-config.js';
 import { UIOverlay } from './ui/UIOverlay.js';
+import { EndGameFeedbackScreen } from './ui/EndGameFeedbackScreen.js';
 
 const W = gameConfig.width;
 const H = gameConfig.height;
@@ -64,3 +65,4 @@ uiContainer.style.boxSizing = 'border-box';
 
 new Phaser.Game(config);
 new UIOverlay('ui-layer');
+new EndGameFeedbackScreen('ui-layer');

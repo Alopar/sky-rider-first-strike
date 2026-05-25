@@ -113,18 +113,6 @@ export class UIOverlay {
     this.hudElement.appendChild(livesBlock.panel);
     this.container.appendChild(this.hudElement);
 
-    this.gameOverElement = document.createElement('div');
-    this.gameOverElement.className = 'hud-overlay-message hud-overlay-message--game-over';
-    this.gameOverElement.textContent = 'GAME OVER';
-
-    this.levelClearElement = document.createElement('div');
-    this.levelClearElement.className = 'hud-overlay-message hud-overlay-message--clear';
-    this.levelClearElement.innerHTML =
-      'MISSION COMPLETE<span class="hud-overlay-message__sub">3:00</span>';
-
-    this.container.appendChild(this.gameOverElement);
-    this.container.appendChild(this.levelClearElement);
-
     this._lastHp = MAX_LIVES;
     this.renderWeaponLevel(1);
   }
@@ -179,15 +167,12 @@ export class UIOverlay {
       this.renderWeaponLevel(level);
     });
 
-    EventBus.on(EVT.GAME_OVER, () => {
-      this.gameOverElement.style.display = 'block';
-      this.levelClearElement.style.display = 'none';
+    EventBus.on(EVT.RUN_ENDED, () => {
+      this.hudElement.style.display = 'none';
     });
 
     EventBus.on(EVT.LEVEL_COMPLETE, () => {
       this.timerElement.textContent = formatElapsedMs(level01.duration);
-      this.levelClearElement.style.display = 'block';
-      this.gameOverElement.style.display = 'none';
     });
 
     EventBus.on(EVT.GAME_START, () => {
@@ -195,8 +180,7 @@ export class UIOverlay {
       this.timerElement.textContent = '0:00';
       this.renderLives(MAX_LIVES);
       this.renderWeaponLevel(1);
-      this.gameOverElement.style.display = 'none';
-      this.levelClearElement.style.display = 'none';
+      this.hudElement.style.display = '';
     });
   }
 }
