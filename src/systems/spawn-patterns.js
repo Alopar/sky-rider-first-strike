@@ -70,12 +70,19 @@ function patternWedge(wave, index, count, corridor) {
   };
 }
 
+/** Широкая цепь: клин по X, по одному кораблю за счёт interval волны (не линия, не узкая колонка). */
+function patternWideChain(wave, index, count, corridor) {
+  const spread = wave.patternSpread ?? 0.5;
+  return patternWedge({ ...wave, patternSpread: spread }, index, count, corridor);
+}
+
 const PATTERN_FNS = {
   line: patternLine,
   snake: patternSnake,
   zigzag: patternZigzag,
   checker: patternChecker,
-  wedge: patternWedge
+  wedge: patternWedge,
+  wideChain: patternWideChain
 };
 
 /**
@@ -84,8 +91,13 @@ const PATTERN_FNS = {
  * @param {number} count — размер пачки (для burst) или 1 для stream
  * @returns {{ ratioX: number, yOffset: number }}
  */
+const HEAVY_CHAIN_TYPES = new Set(['bastion', 'dreadnought']);
+
 export function computeSpawnSlot(wave, index, count) {
-  const pattern = wave.pattern ?? 'line';
+  let pattern = wave.pattern ?? 'line';
+  if (HEAVY_CHAIN_TYPES.has(wave.type) && count > 1 && (pattern === 'line' || pattern === 'snake')) {
+    pattern = 'wideChain';
+  }
   const fn = PATTERN_FNS[pattern] ?? PATTERN_FNS.line;
   const corridor = getCorridor(wave);
   return fn(wave, index, count, corridor);
