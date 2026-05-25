@@ -16,6 +16,8 @@ export class BonusDropSystem {
     this.applyConfig();
 
     EventBus.on(EVT.ENEMY_KILLED, this.onEnemyKilled, this);
+    EventBus.on(EVT.SCORE_CHANGED, this.onScoreChanged, this);
+    EventBus.on(EVT.WEAPON_LEVEL_CHANGED, this.onWeaponLevelChanged, this);
   }
 
   applyConfig() {
@@ -27,9 +29,52 @@ export class BonusDropSystem {
     this.maxChance = drop.maxChance;
     this.currentChance = drop.baseChance;
 
-    const weapon = bonusesConfig.weaponUpgradeDrop;
-    this.weaponUpgradeInterval = weapon.scoreInterval;
-    this.nextWeaponUpgradeAt = weapon.firstAt;
+    this.weaponUpgradeStep = bonusesConfig.weaponUpgradeDrop.scoreStep;
+    this.resetWeaponUpgradeProgress();
+  }
+
+  getWeaponLevel() {
+    return this.scene.registry.get('weaponSystem')?.getLevel() ?? 1;
+  }
+
+  /** Порог внутреннего счётчика: тир × 250 (тир 1 → 250, тир 3 → 750) */
+  getWeaponUpgradeThreshold() {
+    return this.getWeaponLevel() * this.weaponUpgradeStep;
+  }
+
+  resetWeaponUpgradeProgress() {
+    this.weaponUpgradePoints = 0;
+    this._lastMainScore = this.scoreSystem.score;
+  }
+
+  onScoreChanged(score) {
+    if (score === 0) {
+      this.resetWeaponUpgradeProgress();
+      return;
+    }
+
+    const delta = score - this._lastMainScore;
+    this._lastMainScore = score;
+
+    if (delta > 0) {
+      this.weaponUpgradePoints += delta;
+    } else if (delta < 0) {
+      this.weaponUpgradePoints = Math.max(0, this.weaponUpgradePoints + delta);
+    }
+  }
+
+  onWeaponLevelChanged() {
+    this.weaponUpgradePoints = 0;
+  }
+
+  trySpawnWeaponUpgrades(x, y) {
+    let threshold = this.getWeaponUpgradeThreshold();
+
+    while (this.weaponUpgradePoints >= threshold) {
+      this.spawnWeaponUpgrade(x, y);
+      this.weaponUpgradePoints = 0;
+      threshold = this.getWeaponUpgradeThreshold();
+    }
   }
 
   onEnemyKilled(payload) {
@@ -50,10 +95,7 @@ export class BonusDropSystem {
     const currentScore = this.scoreSystem.score;
 
     if (kill.x != null && kill.y != null) {
-      while (currentScore >= this.nextWeaponUpgradeAt) {
-        this.spawnWeaponUpgrade(kill.x, kill.y);
-        this.nextWeaponUpgradeAt += this.weaponUpgradeInterval;
-      }
+      this.trySpawnWeaponUpgrades(kill.x, kill.y);
     }
 
     while (currentScore >= this.nextCheckAt) {
@@ -85,5 +127,7 @@ export class BonusDropSystem {
 
   destroy() {
     EventBus.off(EVT.ENEMY_KILLED, this.onEnemyKilled, this);
+    EventBus.off(EVT.SCORE_CHANGED, this.onScoreChanged, this);
+    EventBus.off(EVT.WEAPON_LEVEL_CHANGED, this.onWeaponLevelChanged, this);
   }
 }

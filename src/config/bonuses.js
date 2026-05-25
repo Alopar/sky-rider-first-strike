@@ -46,10 +46,12 @@ const timedStackingOrbitalsEffect = {
 export const WEAPON_UPGRADE_BONUS_ID = 'weaponUpgrade';
 
 export const bonusesConfig = {
-  /** Апгрейд оружия — отдельно от случайных бонусов, строго по счёту */
+  /**
+   * Апгрейд оружия — внутренний счётчик; порог = текущий_тир × scoreStep
+   * (тир 3 → 750, после дропа сброс в 0; смена тира — тоже сброс в 0)
+   */
   weaponUpgradeDrop: {
-    scoreInterval: 500,
-    firstAt: 500
+    scoreStep: 250
   },
   drop: {
     /** Каждые N очков счёта — проверка на выпадение бонуса */
