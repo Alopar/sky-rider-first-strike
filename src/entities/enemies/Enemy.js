@@ -56,6 +56,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this._debrisSpin = 0;
     this._burstActive = false;
     this._flightSpin = 0;
+    this._fireRateMul = options.fireRateMul ?? 1;
     this._applySpawnRotation();
     this._applyFlightSpin();
 
@@ -284,7 +285,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     this._updateFlightRotation();
 
     if (this.enemyConfig.fireRate && this.enemyConfig.layer === 'fgEnemies' && !this._burstActive) {
-      if (time > this.lastFired + this.enemyConfig.fireRate) {
+      const rate = this.enemyConfig.fireRate * (this._fireRateMul ?? 1);
+      if (time > this.lastFired + rate) {
         this.lastFired = time;
         if (this.enemyConfig.fireMode === 'burstForward') {
           this._fireBurstForward();

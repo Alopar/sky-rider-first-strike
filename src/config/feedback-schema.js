@@ -1,3 +1,5 @@
+import { MUTATION_REVISION } from './level-mutations.js';
+
 export const FEEDBACK_SCHEMA_VERSION = '1.0';
 
 export const FEEDBACK_SCALES = [
@@ -60,6 +62,7 @@ export function buildFeedbackJson({ run, ratings, comment }) {
       weaponLevel: run.weaponLevel
     },
     ratings: roundedRatings,
-    comment: comment.trim()
+    comment: comment.trim(),
+    mutationRevision: MUTATION_REVISION
   };
 }

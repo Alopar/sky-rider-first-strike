@@ -1,5 +1,5 @@
 import { gameConfig } from '../config/game-config.js';
-import { enemiesConfig } from '../config/enemies.js';
+import { fireRateMulForSpawn } from '../config/level-mutations.js';
 import { EventBus } from './EventBus.js';
 import { EVT } from './events.js';
 import { computeSpawnSlot, randomRatioInCorridor } from './spawn-patterns.js';
@@ -97,10 +97,11 @@ class ActiveWave {
 }
 
 export class SpawnDirector {
-  constructor(scene, enemyFactory, levelConfig) {
+  constructor(scene, enemyFactory, levelConfig, enemiesConfig) {
     this.scene = scene;
     this.factory = enemyFactory;
     this.config = levelConfig;
+    this.enemiesConfig = enemiesConfig;
     this.waveIndex = 0;
     this.running = false;
     this.levelComplete = false;
@@ -133,8 +134,18 @@ export class SpawnDirector {
     this.activeWaves = [];
   }
 
+  getElapsedMs() {
+    return this.scene._runElapsedMs ?? 0;
+  }
+
+  _spawnOptions(typeId) {
+    const elapsed = this.getElapsedMs();
+    const mul = fireRateMulForSpawn(typeId, elapsed);
+    return mul === 1 ? {} : { fireRateMul: mul };
+  }
+
   _getSpawnRatioBounds(typeId) {
-    const enemy = enemiesConfig[typeId];
+    const enemy = this.enemiesConfig[typeId];
     if (!enemy) return null;
     if (enemy.spawnZone === 'main') {
       const margin = gameConfig.spawnZones.main.sideMarginRatio;
@@ -197,7 +208,7 @@ export class SpawnDirector {
       y = SPAWN_Y + (slot.yOffset ?? 0);
     }
 
-    this.factory.spawn(wave.type, x, y);
+    this.factory.spawn(wave.type, x, y, this._spawnOptions(wave.type));
   }
 
   spawnStreamOne(wave, index) {
@@ -220,7 +231,7 @@ export class SpawnDirector {
       x = this._ratioToPixelX(ratioX, wave.type);
     }
 
-    this.factory.spawn(wave.type, x, y);
+    this.factory.spawn(wave.type, x, y, this._spawnOptions(wave.type));
   }
 
   update(elapsedMs) {

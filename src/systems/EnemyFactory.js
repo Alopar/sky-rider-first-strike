@@ -2,14 +2,15 @@ import { enemiesConfig, resolveEnemyType } from '../config/enemies.js';
 import { Enemy } from '../entities/enemies/Enemy.js';
 
 export class EnemyFactory {
-  constructor(scene, layerManager) {
+  constructor(scene, layerManager, enemiesMap = enemiesConfig) {
     this.scene = scene;
     this.lm = layerManager;
+    this.enemiesConfig = enemiesMap;
   }
 
   spawn(typeId, x, y, options = {}) {
     const resolvedId = resolveEnemyType(typeId);
-    const config = enemiesConfig[resolvedId];
+    const config = this.enemiesConfig[resolvedId];
     if (!config) return null;
 
     const group = this.lm.getGroup(config.layer);

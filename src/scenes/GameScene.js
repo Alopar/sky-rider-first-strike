@@ -11,7 +11,7 @@ import { BonusDropSystem } from '../systems/BonusDropSystem.js';
 import { SideTurretBonusSystem } from '../systems/SideTurretBonusSystem.js';
 import { OrbitalSphereBonusSystem } from '../systems/OrbitalSphereBonusSystem.js';
 import { gameConfig } from '../config/game-config.js';
-import { level01 } from '../config/levels/level-01.js';
+import { getMutatedGameConfigs } from '../config/level-mutations.js';
 import { EventBus } from '../systems/EventBus.js';
 import { EVT } from '../systems/events.js';
 import { AudioBus } from '../systems/AudioBus.js';
@@ -33,9 +33,12 @@ export class GameScene extends Phaser.Scene {
     this.weaponSystem.setLevel(1);
     this.registry.set('weaponSystem', this.weaponSystem);
     
-    this.enemyFactory = new EnemyFactory(this, this.layerManager);
+    const { level, enemies } = getMutatedGameConfigs();
+    this._levelConfig = level;
+
+    this.enemyFactory = new EnemyFactory(this, this.layerManager, enemies);
     this.registry.set('enemyFactory', this.enemyFactory);
-    this.spawnDirector = new SpawnDirector(this, this.enemyFactory, level01);
+    this.spawnDirector = new SpawnDirector(this, this.enemyFactory, level, enemies);
     
     this.collisionMatrix = new CollisionMatrix(this, this.layerManager, this.player);
     this.scoreSystem = new ScoreSystem();
@@ -138,11 +141,11 @@ export class GameScene extends Phaser.Scene {
 
   buildRunEndedPayload(outcome) {
     const elapsedMs =
-      outcome === 'win' ? level01.duration : this._runElapsedMs;
+      outcome === 'win' ? this._levelConfig.duration : this._runElapsedMs;
 
     return {
       outcome,
-      levelId: level01.id,
+      levelId: this._levelConfig.id,
       score: this.scoreSystem.score,
       elapsedMs,
       hpRemaining: this.player?.hp ?? 0,
@@ -155,7 +158,7 @@ export class GameScene extends Phaser.Scene {
     this._runEnded = true;
     if (outcome === 'win') {
       this._levelCleared = true;
-      EventBus.emit(EVT.LEVEL_TIME_CHANGED, level01.duration);
+      EventBus.emit(EVT.LEVEL_TIME_CHANGED, this._levelConfig.duration);
     }
 
     this.spawnDirector._stopAllWaves();
