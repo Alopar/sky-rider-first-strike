@@ -105,9 +105,7 @@ export class GameScene extends Phaser.Scene {
     
     if (this.player && this.player.active) {
       this.player.update(this.inputManager, delta);
-      if (this.inputManager.isFiring()) {
-        this.weaponSystem.tryFire(this.player, time);
-      }
+      this.weaponSystem.tryFire(this.player, time);
       this.sideTurretBonus.update(time, this.player);
       this.orbitalSphereBonus.update(time, this.player, delta);
     }

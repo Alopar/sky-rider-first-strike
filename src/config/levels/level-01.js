@@ -13,7 +13,7 @@ export const level01 = {
     { time: 8000, type: 'orb', count: 5, interval: 300, pattern: 'zigzag', xRatioFrom: 0.85, xRatioTo: 0.15 },
     { time: 11000, type: 'wobbler', count: 2, interval: 700, pattern: 'wedge', xRatioFrom: 0.25, xRatioTo: 0.75 },
     { time: 14000, type: 'orb', count: 4, interval: 280, pattern: 'wedge', xRatioFrom: 0.2, xRatioTo: 0.8 },
-    { time: 16000, type: 'hauler', count: 1, xRandom: true, xRatioFrom: 0.02, xRatioTo: 0.98 },
+    { time: 34000, type: 'hauler', count: 1, xRandom: true, xRatioFrom: 0.02, xRatioTo: 0.98 },
     { time: 17000, type: 'wobbler', count: 3, interval: 500, pattern: 'zigzag', xRatioFrom: 0.12, xRatioTo: 0.88 },
     { time: 18500, type: 'debrisLarge', count: 5, interval: 320, xRandom: true, xRatioFrom: 0.06, xRatioTo: 0.94 },
     { time: 20000, type: 'orb', count: 6, interval: 250, pattern: 'zigzag', xRatioFrom: 0.05, xRatioTo: 0.95 },
@@ -42,10 +42,10 @@ export const level01 = {
       xRatioTo: 0.94
     },
     {
-      time: 30000,
+      time: 48000,
       mode: 'stream',
       type: 'hauler',
-      duration: 265000,
+      duration: 247000,
       interval: 11000,
       count: 22,
       xRandom: true,

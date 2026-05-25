@@ -43,7 +43,14 @@ const timedStackingOrbitalsEffect = {
   hitCooldownMs: orbitalCfg.hitCooldownMs
 };
 
+export const WEAPON_UPGRADE_BONUS_ID = 'weaponUpgrade';
+
 export const bonusesConfig = {
+  /** Апгрейд оружия — отдельно от случайных бонусов, строго по счёту */
+  weaponUpgradeDrop: {
+    scoreInterval: 500,
+    firstAt: 500
+  },
   drop: {
     /** Каждые N очков счёта — проверка на выпадение бонуса */
     scoreInterval: 100,
@@ -61,7 +68,6 @@ export const bonusesConfig = {
      */
     typeWeights: {
       fragment: 45,
-      weaponUpgrade: 22,
       sideTurrets: 16,
       orbitalSphere: 12,
       shield: 14,
@@ -124,7 +130,9 @@ export const bonusesConfig = {
 export function pickRandomBonusType() {
   const weights = bonusesConfig.drop.typeWeights;
   const types = bonusesConfig.types;
-  const entries = Object.entries(weights).filter(([id, w]) => w > 0 && types[id]);
+  const entries = Object.entries(weights).filter(
+    ([id, w]) => w > 0 && types[id] && id !== WEAPON_UPGRADE_BONUS_ID
+  );
   if (entries.length === 0) {
     return Object.keys(bonusesConfig.types)[0];
   }

@@ -1,4 +1,8 @@
-import { bonusesConfig, pickRandomBonusType } from '../config/bonuses.js';
+import {
+  bonusesConfig,
+  pickRandomBonusType,
+  WEAPON_UPGRADE_BONUS_ID
+} from '../config/bonuses.js';
 import { PowerUp } from '../entities/powerups/PowerUp.js';
 import { EventBus } from './EventBus.js';
 import { EVT } from './events.js';
@@ -9,18 +13,23 @@ export class BonusDropSystem {
     this.layerManager = layerManager;
     this.scoreSystem = scoreSystem;
 
-    this.applyDropConfig(bonusesConfig.drop);
+    this.applyConfig();
 
     EventBus.on(EVT.ENEMY_KILLED, this.onEnemyKilled, this);
   }
 
-  applyDropConfig(drop) {
+  applyConfig() {
+    const drop = bonusesConfig.drop;
     this.scoreInterval = drop.scoreInterval;
     this.nextCheckAt = drop.firstCheckAt;
     this.baseChance = drop.baseChance;
     this.chanceIncrement = drop.chanceIncrement;
     this.maxChance = drop.maxChance;
     this.currentChance = drop.baseChance;
+
+    const weapon = bonusesConfig.weaponUpgradeDrop;
+    this.weaponUpgradeInterval = weapon.scoreInterval;
+    this.nextWeaponUpgradeAt = weapon.firstAt;
   }
 
   onEnemyKilled(payload) {
@@ -39,6 +48,13 @@ export class BonusDropSystem {
     }
 
     const currentScore = this.scoreSystem.score;
+
+    if (kill.x != null && kill.y != null) {
+      while (currentScore >= this.nextWeaponUpgradeAt) {
+        this.spawnWeaponUpgrade(kill.x, kill.y);
+        this.nextWeaponUpgradeAt += this.weaponUpgradeInterval;
+      }
+    }
 
     while (currentScore >= this.nextCheckAt) {
       if (Math.random() < this.currentChance && kill.x != null && kill.y != null) {
@@ -59,8 +75,12 @@ export class BonusDropSystem {
     new PowerUp(this.scene, this.layerManager, x, y, typeId);
   }
 
+  spawnWeaponUpgrade(x, y) {
+    new PowerUp(this.scene, this.layerManager, x, y, WEAPON_UPGRADE_BONUS_ID);
+  }
+
   reset() {
-    this.applyDropConfig(bonusesConfig.drop);
+    this.applyConfig();
   }
 
   destroy() {
