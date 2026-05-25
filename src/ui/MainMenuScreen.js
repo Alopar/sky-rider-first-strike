@@ -1,7 +1,7 @@
 const ASSETS = {
   bg: 'assets/svg/ui/menu_background.svg',
   frame: 'assets/svg/ui/menu_frame.svg',
-  logo: 'assets/ui/menu_logo.png',
+  logo: 'assets/svg/ui/menu_logo.svg',
   buttonIdle: 'assets/svg/ui/button_play_idle.svg',
   buttonFocus: 'assets/svg/ui/button_play_focus.svg'
 };
