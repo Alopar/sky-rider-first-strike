@@ -73,7 +73,7 @@ function applyEnemyMutations(cfg) {
   }
   if (cfg.debrisMegaCharge) cfg.debrisMegaCharge.hp = 26;
   if (cfg.dreadnought) cfg.dreadnought.hp = 24;
-  if (cfg.miniBoss) cfg.miniBoss.hp = (cfg.dreadnought?.hp ?? 24) * 3;
+  if (cfg.miniBoss) cfg.miniBoss.hp = (cfg.dreadnought?.hp ?? 24) * 6;
   if (cfg.bastion) cfg.bastion.hp = 8;
   return cfg;
 }
